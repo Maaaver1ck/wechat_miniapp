@@ -9,6 +9,23 @@
   font-weight: 600;
 }
 
+.picker-row {
+  display: flex;
+  gap: 18rpx;
+}
+
+.picker-row picker {
+  flex: 1;
+  min-width: 0;
+}
+
+.time-picker-value {
+  box-sizing: border-box;
+  padding: 0 18rpx;
+  border-radius: 18rpx;
+  background: #f6f8ff;
+}
+
 .save-btn {
   margin-top: 28rpx;
 }

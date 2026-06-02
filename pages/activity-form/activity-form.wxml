@@ -31,15 +31,31 @@
     </view>
     <view class="field">
       <text class="label">开始时间</text>
-      <input name="startTime" value="{{activity.startTime}}" placeholder="例如：2026-05-08 19:00" />
+      <view class="picker-row">
+        <picker mode="date" fields="day" value="{{startDate}}" bindchange="onStartDateChange">
+          <view class="picker-value time-picker-value">{{startDate}}</view>
+        </picker>
+        <picker mode="time" value="{{startClock}}" bindchange="onStartClockChange">
+          <view class="picker-value time-picker-value">{{startClock}}</view>
+        </picker>
+      </view>
     </view>
     <view class="field">
       <text class="label">活动时长</text>
-      <input name="duration" value="{{activity.duration}}" placeholder="例如：2 小时 / 90 分钟" />
+      <picker mode="multiSelector" range="{{durationColumns}}" value="{{durationValue}}" bindchange="onDurationChange">
+        <view class="picker-value">{{durationText}}</view>
+      </picker>
     </view>
     <view class="field">
       <text class="label">报名截止</text>
-      <input name="deadline" value="{{activity.deadline}}" placeholder="例如：2026-05-07 22:00" />
+      <view class="picker-row">
+        <picker mode="date" fields="day" value="{{deadlineDate}}" bindchange="onDeadlineDateChange">
+          <view class="picker-value time-picker-value">{{deadlineDate}}</view>
+        </picker>
+        <picker mode="time" value="{{deadlineClock}}" bindchange="onDeadlineClockChange">
+          <view class="picker-value time-picker-value">{{deadlineClock}}</view>
+        </picker>
+      </view>
     </view>
     <view class="field">
       <text class="label">地点</text>

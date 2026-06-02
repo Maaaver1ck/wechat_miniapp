@@ -1,6 +1,55 @@
 const store = require('../../utils/store');
 const cloudApi = require('../../utils/cloudApi');
 
+const MINUTE_OPTIONS = ['00', '15', '30', '45'];
+const HOUR_OPTIONS = Array.from({ length: 25 }, (_, index) => `${index}`);
+
+function pad(value) {
+  return String(value).padStart(2, '0');
+}
+
+function getNowParts() {
+  const now = new Date();
+  return {
+    date: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
+    time: `${pad(now.getHours())}:${pad(now.getMinutes())}`
+  };
+}
+
+function parseDateTime(value) {
+  const now = getNowParts();
+  const match = String(value || '').trim().match(/^(\d{4}-\d{2}-\d{2})(?:\s+(\d{2}:\d{2}))?/);
+  return {
+    date: match ? match[1] : now.date,
+    time: match && match[2] ? match[2] : now.time
+  };
+}
+
+function normalizeDurationText(hour, minute) {
+  const parts = [];
+  if (hour > 0) {
+    parts.push(`${hour} 小时`);
+  }
+  if (minute > 0) {
+    parts.push(`${minute} 分钟`);
+  }
+  return parts.join(' ') || '0 分钟';
+}
+
+function parseDuration(value) {
+  const text = String(value || '').trim();
+  const hourMatch = text.match(/(\d+)\s*小时/);
+  const minuteMatch = text.match(/(\d+)\s*分钟/);
+  const hour = hourMatch ? Number(hourMatch[1]) : 2;
+  const minute = minuteMatch ? Number(minuteMatch[1]) : 0;
+  const safeHour = Math.min(Math.max(hour, 0), HOUR_OPTIONS.length - 1);
+  const safeMinute = MINUTE_OPTIONS.includes(pad(minute)) ? pad(minute) : '00';
+  return {
+    value: [safeHour, MINUTE_OPTIONS.indexOf(safeMinute)],
+    text: normalizeDurationText(safeHour, Number(safeMinute))
+  };
+}
+
 Page({
   data: {
     isEdit: false,
@@ -11,6 +60,13 @@ Page({
     categories: store.CATEGORIES.filter(item => item !== '全部'),
     categoryIndex: 0,
     selectedCategory: '学术',
+    startDate: '',
+    startClock: '',
+    deadlineDate: '',
+    deadlineClock: '',
+    durationColumns: [HOUR_OPTIONS, MINUTE_OPTIONS],
+    durationValue: [2, 0],
+    durationText: '2 小时',
     loading: false,
     loadFailed: false,
     submitting: false
@@ -25,6 +81,8 @@ Page({
     const clubs = [];
     const activity = {};
     const isEdit = Boolean(options.id);
+    const now = getNowParts();
+    const defaultDuration = parseDuration('');
 
     this.setData({
       isEdit,
@@ -34,6 +92,12 @@ Page({
       selectedClubName: '请选择社团',
       categoryIndex: 0,
       selectedCategory: this.data.categories[0],
+      startDate: now.date,
+      startClock: now.time,
+      deadlineDate: now.date,
+      deadlineClock: now.time,
+      durationValue: defaultDuration.value,
+      durationText: defaultDuration.text,
       loading: true,
       loadFailed: false
     });
@@ -58,6 +122,9 @@ Page({
       const nextClubId = cloudActivity.clubId || options.clubId;
       const nextClubIndex = Math.max(cloudClubs.findIndex(club => club.id === nextClubId), 0);
       const nextCategoryIndex = Math.max(this.data.categories.findIndex(item => item === cloudActivity.category), 0);
+      const startParts = parseDateTime(cloudActivity.startTime);
+      const deadlineParts = parseDateTime(cloudActivity.deadline);
+      const durationParts = parseDuration(cloudActivity.duration);
       this.setData({
         clubs: cloudClubs,
         activity: cloudActivity || {},
@@ -65,6 +132,12 @@ Page({
         selectedClubName: (cloudClubs[nextClubIndex] || {}).name || '请选择社团',
         categoryIndex: nextCategoryIndex,
         selectedCategory: this.data.categories[nextCategoryIndex],
+        startDate: startParts.date,
+        startClock: startParts.time,
+        deadlineDate: deadlineParts.date,
+        deadlineClock: deadlineParts.time,
+        durationValue: durationParts.value,
+        durationText: durationParts.text,
         loading: false
       });
     } catch (error) {
@@ -89,6 +162,32 @@ Page({
     });
   },
 
+  onStartDateChange(event) {
+    this.setData({ startDate: event.detail.value });
+  },
+
+  onStartClockChange(event) {
+    this.setData({ startClock: event.detail.value });
+  },
+
+  onDeadlineDateChange(event) {
+    this.setData({ deadlineDate: event.detail.value });
+  },
+
+  onDeadlineClockChange(event) {
+    this.setData({ deadlineClock: event.detail.value });
+  },
+
+  onDurationChange(event) {
+    const value = event.detail.value.map(item => Number(item));
+    const hour = Number(this.data.durationColumns[0][value[0]]);
+    const minute = Number(this.data.durationColumns[1][value[1]]);
+    this.setData({
+      durationValue: value,
+      durationText: normalizeDurationText(hour, minute)
+    });
+  },
+
   async submitActivity(event) {
     if (this.data.submitting) {
       return;
@@ -96,11 +195,18 @@ Page({
     const value = event.detail.value;
     const club = this.data.clubs[this.data.clubIndex];
     const category = this.data.categories[this.data.categoryIndex];
-    const required = ['title', 'startTime', 'duration', 'deadline', 'location', 'quota', 'description'];
+    const required = ['title', 'location', 'quota', 'description'];
     const missing = required.some(field => !String(value[field] || '').trim());
 
-    if (!club || missing) {
+    if (!club || missing || !this.data.startDate || !this.data.startClock || !this.data.deadlineDate || !this.data.deadlineClock) {
       wx.showToast({ title: '请完整填写活动信息', icon: 'none' });
+      return;
+    }
+
+    const durationHour = Number(this.data.durationColumns[0][this.data.durationValue[0]]);
+    const durationMinute = Number(this.data.durationColumns[1][this.data.durationValue[1]]);
+    if (durationHour === 0 && durationMinute === 0) {
+      wx.showToast({ title: '活动时长需大于 0', icon: 'none' });
       return;
     }
 
@@ -112,6 +218,10 @@ Page({
     const payload = Object.assign({}, this.data.activity, value, {
       clubId: club.id,
       category: category,
+      startTime: `${this.data.startDate} ${this.data.startClock}`,
+      deadline: `${this.data.deadlineDate} ${this.data.deadlineClock}`,
+      duration: this.data.durationText,
+      endTime: '',
       coverTone: this.data.activity.coverTone || 'green'
     });
 
