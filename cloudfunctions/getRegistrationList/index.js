@@ -102,7 +102,10 @@ exports.main = async event => {
       category: activity.category,
       startTime: activity.startTime,
       location: activity.location,
-      quota: Number(activity.quota || 0)
+      quota: Number(activity.quota || 0),
+      registrationMethod: activity.registrationMethod || 'miniapp',
+      registrationNote: activity.registrationNote || '',
+      usesMiniappRegistration: (activity.registrationMethod || 'miniapp') === 'miniapp'
     },
     activeItems: items.filter(item => item.status === 'active'),
     cancelledItems: items.filter(item => item.status === 'cancelled')

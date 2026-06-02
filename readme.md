@@ -312,10 +312,20 @@ SMTP_FROM=校园社团活动 <653848616@qq.com>
   duration: '活动时长，由小时和分钟选择器生成，例如 2 小时 30 分钟',
   deadline: '报名截止时间，由日期和时间选择器生成',
   location: '地点',
+  registrationMethod: 'miniapp',
+  registrationNote: '其他报名方法说明',
   quota: 50,
   coverTone: 'green',
   description: '活动说明'
 }
+```
+
+`registrationMethod` 可选值：
+
+```text
+miniapp  小程序报名，需要填写人数上限
+none     无需报名，不需要填写人数上限
+other    其他报名，需要填写报名方法说明
 ```
 
 权限要求：
@@ -413,7 +423,9 @@ omhZU3Y6E3KbPY724xQlLOiC8au4
 | `endTime` | string | 历史兼容字段，旧数据可能存在 |
 | `deadline` | string | 报名截止时间 |
 | `location` | string | 活动地点 |
-| `quota` | number | 人数上限 |
+| `quota` | number | 小程序报名人数上限，非小程序报名为 `0` |
+| `registrationMethod` | string | `miniapp`、`none` 或 `other` |
+| `registrationNote` | string | 其他报名方法说明 |
 | `coverTone` | string | 封面色调 |
 | `description` | string | 活动说明 |
 | `status` | string | 状态，默认 `open`，删除态为 `deleted` |
@@ -667,6 +679,8 @@ return {
   duration: '2 小时 30 分钟',
   deadline: '2026-06-09 18:00',
   location: '教学楼 A301',
+  registrationMethod: 'miniapp',
+  registrationNote: '',
   quota: 50,
   coverTone: 'green',
   description: '面向零基础同学介绍微信小程序云开发。',

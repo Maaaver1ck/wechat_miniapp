@@ -32,6 +32,8 @@ exports.main = async event => {
 
   const quota = Number(activity.quota || 0);
   const registeredCount = countResult.total;
+  const registrationMethod = activity.registrationMethod || 'miniapp';
+  const usesMiniappRegistration = registrationMethod === 'miniapp';
 
   return {
     ok: true,
@@ -47,12 +49,15 @@ exports.main = async event => {
       deadline: activity.deadline,
       location: activity.location,
       quota,
+      registrationMethod,
+      registrationNote: activity.registrationNote || '',
+      usesMiniappRegistration,
       coverTone: activity.coverTone || 'green',
       description: activity.description,
       status: activity.status || 'open',
       registeredCount,
-      spotsLeft: Math.max(quota - registeredCount, 0),
-      isFull: quota > 0 && registeredCount >= quota,
+      spotsLeft: usesMiniappRegistration ? Math.max(quota - registeredCount, 0) : 0,
+      isFull: usesMiniappRegistration && quota > 0 && registeredCount >= quota,
       hasRegistered: myRegistration.data.length > 0
     }
   };

@@ -1,7 +1,9 @@
 <view class="page">
   <view wx:if="{{activity}}" class="campus-hero">
     <view class="hero-title">{{activity.title}}</view>
-    <view class="hero-subtitle">当前报名 {{activeItems.length}} / {{activity.quota}}</view>
+    <view class="hero-subtitle">
+      {{activity.usesMiniappRegistration ? '当前报名 ' + activeItems.length + ' / ' + activity.quota : activity.registrationMethod === 'none' ? '无需小程序报名' : '其他报名：' + activity.registrationNote}}
+    </view>
   </view>
 
   <view class="section-title">报名学生</view>

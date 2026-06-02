@@ -61,6 +61,9 @@ exports.main = async () => {
       deadline: activity.deadline,
       location: activity.location,
       quota: Number(activity.quota || 0),
+      registrationMethod: activity.registrationMethod || 'miniapp',
+      registrationNote: activity.registrationNote || '',
+      usesMiniappRegistration: (activity.registrationMethod || 'miniapp') === 'miniapp',
       coverTone: activity.coverTone || 'green',
       description: activity.description,
       status: activity.status || 'open'

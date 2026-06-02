@@ -48,6 +48,13 @@ exports.main = async event => {
     };
   }
 
+  if ((activity.registrationMethod || 'miniapp') !== 'miniapp') {
+    return {
+      ok: false,
+      reason: '该活动不通过小程序报名'
+    };
+  }
+
   const existing = await db.collection('registrations').where({
     activityId,
     _openid: OPENID,

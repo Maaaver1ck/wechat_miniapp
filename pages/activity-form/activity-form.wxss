@@ -26,6 +26,12 @@
   background: #f6f8ff;
 }
 
+.disabled-value {
+  min-height: 72rpx;
+  display: flex;
+  align-items: center;
+}
+
 .save-btn {
   margin-top: 28rpx;
 }

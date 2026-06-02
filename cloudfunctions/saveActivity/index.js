@@ -20,6 +20,9 @@ function isPlatformAdmin(openid) {
 }
 
 function normalizeActivity(activity) {
+  const registrationMethod = ['miniapp', 'none', 'other'].includes(activity.registrationMethod)
+    ? activity.registrationMethod
+    : 'miniapp';
   return {
     id: activity.id || '',
     title: String(activity.title || '').trim(),
@@ -31,6 +34,8 @@ function normalizeActivity(activity) {
     deadline: String(activity.deadline || '').trim(),
     location: String(activity.location || '').trim(),
     quota: Number(activity.quota || 0),
+    registrationMethod,
+    registrationNote: String(activity.registrationNote || '').trim(),
     coverTone: String(activity.coverTone || 'green').trim(),
     description: String(activity.description || '').trim()
   };
@@ -59,7 +64,14 @@ exports.main = async event => {
   const required = ['title', 'clubId', 'category', 'startTime', 'duration', 'deadline', 'location', 'description'];
   const missing = required.some(key => !activity[key]);
 
-  if (missing || activity.quota <= 0) {
+  if (missing || (activity.registrationMethod === 'miniapp' && activity.quota <= 0)) {
+    return {
+      ok: false,
+      reason: '请完整填写活动信息'
+    };
+  }
+
+  if (activity.registrationMethod === 'other' && !activity.registrationNote) {
     return {
       ok: false,
       reason: '请完整填写活动信息'
@@ -91,7 +103,9 @@ exports.main = async event => {
     endTime: activity.endTime,
     deadline: activity.deadline,
     location: activity.location,
-    quota: activity.quota,
+    quota: activity.registrationMethod === 'miniapp' ? activity.quota : 0,
+    registrationMethod: activity.registrationMethod,
+    registrationNote: activity.registrationNote,
     coverTone: activity.coverTone,
     description: activity.description,
     status: 'open',

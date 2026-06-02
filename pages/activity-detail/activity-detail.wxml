@@ -33,9 +33,15 @@
       <view class="info-label">报名截止</view>
       <view class="info-value">{{activity.deadline}}</view>
     </view>
-    <view class="info-row">
+    <view wx:if="{{activity.usesMiniappRegistration}}" class="info-row">
       <view class="info-label">剩余名额</view>
       <view class="info-value">{{activity.spotsLeft}} / {{activity.quota}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">报名方法</view>
+      <view class="info-value">
+        {{activity.registrationMethod === 'miniapp' ? '小程序报名' : activity.registrationMethod === 'none' ? '无需报名' : activity.registrationNote}}
+      </view>
     </view>
   </view>
 
@@ -43,13 +49,18 @@
   <view class="card description">{{activity.description}}</view>
 
   <view class="footer-space"></view>
-  <view class="action-bar">
+  <view wx:if="{{activity.usesMiniappRegistration}}" class="action-bar">
     <button wx:if="{{activity.hasRegistered}}" class="danger-btn" bindtap="cancelRegister" disabled="{{submitting || cancelling}}">
       {{cancelling ? '取消中...' : '取消报名'}}
     </button>
     <button wx:elif="{{activity.isFull}}" class="secondary-btn" disabled>名额已满</button>
     <button wx:else class="primary-btn" bindtap="register" disabled="{{submitting || cancelling}}">
       {{submitting ? '报名中...' : '立即报名'}}
+    </button>
+  </view>
+  <view wx:else class="action-bar">
+    <button class="secondary-btn" disabled>
+      {{activity.registrationMethod === 'none' ? '无需报名' : '请按说明报名'}}
     </button>
   </view>
   </block>

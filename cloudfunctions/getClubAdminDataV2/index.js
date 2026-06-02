@@ -33,8 +33,10 @@ function getAdminOpenids(club) {
 }
 
 function normalizeActivity(activity, registrationCounts, clubMap) {
+  const registrationMethod = activity.registrationMethod || 'miniapp';
   const registeredCount = registrationCounts[activity._id] || 0;
   const quota = Number(activity.quota || 0);
+  const usesMiniappRegistration = registrationMethod === 'miniapp';
   return {
     id: activity._id,
     title: activity.title,
@@ -47,12 +49,15 @@ function normalizeActivity(activity, registrationCounts, clubMap) {
     deadline: activity.deadline,
     location: activity.location,
     quota,
+    registrationMethod,
+    registrationNote: activity.registrationNote || '',
+    usesMiniappRegistration,
     coverTone: activity.coverTone || 'green',
     description: activity.description,
     status: activity.status || 'open',
     registeredCount,
-    spotsLeft: Math.max(quota - registeredCount, 0),
-    isFull: quota > 0 && registeredCount >= quota
+    spotsLeft: usesMiniappRegistration ? Math.max(quota - registeredCount, 0) : 0,
+    isFull: usesMiniappRegistration && quota > 0 && registeredCount >= quota
   };
 }
 

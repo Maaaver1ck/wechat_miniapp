@@ -55,14 +55,17 @@
     <view class="activity-main">
       <view class="row space-between">
         <view class="club-name">{{item.clubName}}</view>
-        <view class="tag {{item.isFull ? 'gray' : ''}}">{{item.isFull ? '已满员' : '报名中'}}</view>
+        <view class="tag {{item.isFull ? 'gray' : ''}}">
+          {{item.usesMiniappRegistration ? (item.isFull ? '已满员' : '报名中') : (item.registrationMethod === 'none' ? '无需报名' : '其他报名')}}
+        </view>
       </view>
       <view class="activity-title">{{item.title}}</view>
       <view class="meta">{{item.startTime}} · {{item.duration}} · {{item.location}}</view>
-      <view class="row space-between progress-row">
+      <view wx:if="{{item.usesMiniappRegistration}}" class="row space-between progress-row">
         <view class="muted">已报名 {{item.registeredCount}} / {{item.quota}}</view>
         <view class="spots">{{item.spotsLeft}} 个名额</view>
       </view>
+      <view wx:else class="muted progress-row">{{item.registrationMethod === 'none' ? '无需提前报名' : item.registrationNote}}</view>
     </view>
   </view>
 </view>

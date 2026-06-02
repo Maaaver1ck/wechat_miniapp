@@ -31,7 +31,7 @@
     <view wx:for="{{activities}}" wx:key="id" class="card admin-activity">
       <view class="row space-between">
         <view class="tag">{{item.category}}</view>
-        <view class="muted">{{item.registeredCount}} / {{item.quota}}</view>
+        <view class="muted">{{item.usesMiniappRegistration ? item.registeredCount + ' / ' + item.quota : item.registrationMethod === 'none' ? '无需报名' : '其他报名'}}</view>
       </view>
       <view class="activity-title">{{item.title}}</view>
       <view class="muted">{{item.startTime}} · {{item.duration}} · {{item.location}}</view>

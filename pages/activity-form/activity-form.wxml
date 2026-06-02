@@ -62,8 +62,19 @@
       <input name="location" value="{{activity.location}}" placeholder="请输入活动地点" />
     </view>
     <view class="field">
+      <text class="label">报名方法</text>
+      <picker mode="selector" range="{{registrationMethods}}" range-key="label" value="{{registrationMethodIndex}}" bindchange="onRegistrationMethodChange">
+        <view class="picker-value">{{selectedRegistrationMethodLabel}}</view>
+      </picker>
+    </view>
+    <view class="field">
       <text class="label">人数上限</text>
-      <input name="quota" value="{{activity.quota}}" type="number" placeholder="请输入人数上限" />
+      <input wx:if="{{selectedRegistrationMethod === 'miniapp'}}" name="quota" value="{{activity.quota}}" type="number" placeholder="请输入人数上限" />
+      <view wx:else class="muted disabled-value">当前报名方法无需填写人数上限</view>
+    </view>
+    <view wx:if="{{selectedRegistrationMethod === 'other'}}" class="field">
+      <text class="label">报名方法说明</text>
+      <textarea name="registrationNote" value="{{activity.registrationNote}}" placeholder="例如：请扫描海报二维码报名，或联系社团负责人" />
     </view>
     <view class="field">
       <text class="label">活动介绍</text>

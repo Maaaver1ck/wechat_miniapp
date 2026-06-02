@@ -3,6 +3,11 @@ const cloudApi = require('../../utils/cloudApi');
 
 const MINUTE_OPTIONS = ['00', '15', '30', '45'];
 const HOUR_OPTIONS = Array.from({ length: 25 }, (_, index) => `${index}`);
+const REGISTRATION_METHODS = [
+  { value: 'miniapp', label: '小程序报名' },
+  { value: 'none', label: '无需报名' },
+  { value: 'other', label: '其他' }
+];
 
 function pad(value) {
   return String(value).padStart(2, '0');
@@ -50,6 +55,11 @@ function parseDuration(value) {
   };
 }
 
+function getRegistrationMethodIndex(value) {
+  const index = REGISTRATION_METHODS.findIndex(item => item.value === value);
+  return index < 0 ? 0 : index;
+}
+
 Page({
   data: {
     isEdit: false,
@@ -67,6 +77,10 @@ Page({
     durationColumns: [HOUR_OPTIONS, MINUTE_OPTIONS],
     durationValue: [2, 0],
     durationText: '2 小时',
+    registrationMethods: REGISTRATION_METHODS,
+    registrationMethodIndex: 0,
+    selectedRegistrationMethod: 'miniapp',
+    selectedRegistrationMethodLabel: '小程序报名',
     loading: false,
     loadFailed: false,
     submitting: false
@@ -98,6 +112,9 @@ Page({
       deadlineClock: now.time,
       durationValue: defaultDuration.value,
       durationText: defaultDuration.text,
+      registrationMethodIndex: 0,
+      selectedRegistrationMethod: 'miniapp',
+      selectedRegistrationMethodLabel: '小程序报名',
       loading: true,
       loadFailed: false
     });
@@ -125,6 +142,8 @@ Page({
       const startParts = parseDateTime(cloudActivity.startTime);
       const deadlineParts = parseDateTime(cloudActivity.deadline);
       const durationParts = parseDuration(cloudActivity.duration);
+      const registrationMethodIndex = getRegistrationMethodIndex(cloudActivity.registrationMethod);
+      const selectedRegistrationMethod = REGISTRATION_METHODS[registrationMethodIndex];
       this.setData({
         clubs: cloudClubs,
         activity: cloudActivity || {},
@@ -138,6 +157,9 @@ Page({
         deadlineClock: deadlineParts.time,
         durationValue: durationParts.value,
         durationText: durationParts.text,
+        registrationMethodIndex,
+        selectedRegistrationMethod: selectedRegistrationMethod.value,
+        selectedRegistrationMethodLabel: selectedRegistrationMethod.label,
         loading: false
       });
     } catch (error) {
@@ -188,6 +210,16 @@ Page({
     });
   },
 
+  onRegistrationMethodChange(event) {
+    const registrationMethodIndex = Number(event.detail.value);
+    const selectedRegistrationMethod = this.data.registrationMethods[registrationMethodIndex];
+    this.setData({
+      registrationMethodIndex,
+      selectedRegistrationMethod: selectedRegistrationMethod.value,
+      selectedRegistrationMethodLabel: selectedRegistrationMethod.label
+    });
+  },
+
   async submitActivity(event) {
     if (this.data.submitting) {
       return;
@@ -195,7 +227,7 @@ Page({
     const value = event.detail.value;
     const club = this.data.clubs[this.data.clubIndex];
     const category = this.data.categories[this.data.categoryIndex];
-    const required = ['title', 'location', 'quota', 'description'];
+    const required = ['title', 'location', 'description'];
     const missing = required.some(field => !String(value[field] || '').trim());
 
     if (!club || missing || !this.data.startDate || !this.data.startClock || !this.data.deadlineDate || !this.data.deadlineClock) {
@@ -210,8 +242,13 @@ Page({
       return;
     }
 
-    if (Number(value.quota) <= 0) {
+    if (this.data.selectedRegistrationMethod === 'miniapp' && Number(value.quota) <= 0) {
       wx.showToast({ title: '人数上限需大于 0', icon: 'none' });
+      return;
+    }
+
+    if (this.data.selectedRegistrationMethod === 'other' && !String(value.registrationNote || '').trim()) {
+      wx.showToast({ title: '请填写报名方法', icon: 'none' });
       return;
     }
 
@@ -222,6 +259,9 @@ Page({
       deadline: `${this.data.deadlineDate} ${this.data.deadlineClock}`,
       duration: this.data.durationText,
       endTime: '',
+      quota: this.data.selectedRegistrationMethod === 'miniapp' ? Number(value.quota) : 0,
+      registrationMethod: this.data.selectedRegistrationMethod,
+      registrationNote: String(value.registrationNote || '').trim(),
       coverTone: this.data.activity.coverTone || 'green'
     });
 
