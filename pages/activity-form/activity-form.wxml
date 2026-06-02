@@ -34,8 +34,8 @@
       <input name="startTime" value="{{activity.startTime}}" placeholder="例如：2026-05-08 19:00" />
     </view>
     <view class="field">
-      <text class="label">结束时间</text>
-      <input name="endTime" value="{{activity.endTime}}" placeholder="例如：2026-05-08 21:00" />
+      <text class="label">活动时长</text>
+      <input name="duration" value="{{activity.duration}}" placeholder="例如：2 小时 / 90 分钟" />
     </view>
     <view class="field">
       <text class="label">报名截止</text>

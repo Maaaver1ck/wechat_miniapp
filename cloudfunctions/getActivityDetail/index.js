@@ -42,6 +42,7 @@ exports.main = async event => {
       clubName: clubResult.data.name,
       category: activity.category,
       startTime: activity.startTime,
+      duration: activity.duration || activity.endTime || '',
       endTime: activity.endTime,
       deadline: activity.deadline,
       location: activity.location,

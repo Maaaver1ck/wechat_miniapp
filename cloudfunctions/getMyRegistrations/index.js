@@ -56,6 +56,7 @@ exports.main = async () => {
       clubName: clubMap[activity.clubId] || '未知社团',
       category: activity.category,
       startTime: activity.startTime,
+      duration: activity.duration || activity.endTime || '',
       endTime: activity.endTime,
       deadline: activity.deadline,
       location: activity.location,

@@ -26,6 +26,7 @@ function normalizeActivity(activity) {
     clubId: String(activity.clubId || '').trim(),
     category: String(activity.category || '').trim(),
     startTime: String(activity.startTime || '').trim(),
+    duration: String(activity.duration || activity.endTime || '').trim(),
     endTime: String(activity.endTime || '').trim(),
     deadline: String(activity.deadline || '').trim(),
     location: String(activity.location || '').trim(),
@@ -55,7 +56,7 @@ async function isEmailVerified(openid) {
 exports.main = async event => {
   const { OPENID } = cloud.getWXContext();
   const activity = normalizeActivity(event.activity || {});
-  const required = ['title', 'clubId', 'category', 'startTime', 'endTime', 'deadline', 'location', 'description'];
+  const required = ['title', 'clubId', 'category', 'startTime', 'duration', 'deadline', 'location', 'description'];
   const missing = required.some(key => !activity[key]);
 
   if (missing || activity.quota <= 0) {
@@ -86,6 +87,7 @@ exports.main = async event => {
     clubId: activity.clubId,
     category: activity.category,
     startTime: activity.startTime,
+    duration: activity.duration,
     endTime: activity.endTime,
     deadline: activity.deadline,
     location: activity.location,

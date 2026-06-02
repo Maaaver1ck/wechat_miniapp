@@ -96,7 +96,7 @@ Page({
     const value = event.detail.value;
     const club = this.data.clubs[this.data.clubIndex];
     const category = this.data.categories[this.data.categoryIndex];
-    const required = ['title', 'startTime', 'endTime', 'deadline', 'location', 'quota', 'description'];
+    const required = ['title', 'startTime', 'duration', 'deadline', 'location', 'quota', 'description'];
     const missing = required.some(field => !String(value[field] || '').trim());
 
     if (!club || missing) {

@@ -58,7 +58,7 @@
         <view class="tag {{item.isFull ? 'gray' : ''}}">{{item.isFull ? '已满员' : '报名中'}}</view>
       </view>
       <view class="activity-title">{{item.title}}</view>
-      <view class="meta">{{item.startTime}} · {{item.location}}</view>
+      <view class="meta">{{item.startTime}} · {{item.duration}} · {{item.location}}</view>
       <view class="row space-between progress-row">
         <view class="muted">已报名 {{item.registeredCount}} / {{item.quota}}</view>
         <view class="spots">{{item.spotsLeft}} 个名额</view>

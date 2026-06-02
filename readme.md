@@ -309,7 +309,7 @@ SMTP_FROM=校园社团活动 <653848616@qq.com>
   clubId: '社团 ID',
   category: '分类',
   startTime: '开始时间',
-  endTime: '结束时间',
+  duration: '活动时长，例如 2 小时',
   deadline: '报名截止时间',
   location: '地点',
   quota: 50,
@@ -409,7 +409,8 @@ omhZU3Y6E3KbPY724xQlLOiC8au4
 | `clubId` | string | 所属社团 ID |
 | `category` | string | 分类 |
 | `startTime` | string | 开始时间 |
-| `endTime` | string | 结束时间 |
+| `duration` | string | 活动时长 |
+| `endTime` | string | 历史兼容字段，旧数据可能存在 |
 | `deadline` | string | 报名截止时间 |
 | `location` | string | 活动地点 |
 | `quota` | number | 人数上限 |
@@ -663,7 +664,7 @@ return {
   clubId: 'clubs 集合中的文档 _id',
   category: '学术',
   startTime: '2026-06-10 19:00',
-  endTime: '2026-06-10 21:00',
+  duration: '2 小时',
   deadline: '2026-06-09 18:00',
   location: '教学楼 A301',
   quota: 50,

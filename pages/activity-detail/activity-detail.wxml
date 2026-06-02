@@ -19,7 +19,11 @@
   <view class="card info-card">
     <view class="info-row">
       <view class="info-label">活动时间</view>
-      <view class="info-value">{{activity.startTime}} - {{activity.endTime}}</view>
+      <view class="info-value">{{activity.startTime}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">活动时长</view>
+      <view class="info-value">{{activity.duration}}</view>
     </view>
     <view class="info-row">
       <view class="info-label">活动地点</view>

@@ -20,6 +20,6 @@
       <view class="muted">{{item.createdAt}}</view>
     </view>
     <view class="activity-title">{{item.activity.title}}</view>
-    <view class="muted">{{item.activity.startTime}} · {{item.activity.location}}</view>
+    <view class="muted">{{item.activity.startTime}} · {{item.activity.duration}} · {{item.activity.location}}</view>
   </view>
 </view>
