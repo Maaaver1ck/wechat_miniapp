@@ -102,8 +102,13 @@ Page({
             return;
           }
         } catch (error) {
+          console.warn('deleteActivity failed', error);
           this.setData({ deletingId: '' });
-          wx.showToast({ title: '删除失败，请检查网络或云函数配置', icon: 'none' });
+          wx.showModal({
+            title: '删除失败',
+            content: (error && error.errMsg) || (error && error.message) || '请检查 deleteActivity 云函数是否已部署到当前云环境。',
+            showCancel: false
+          });
           return;
         }
 
