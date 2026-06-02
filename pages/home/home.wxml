@@ -1,0 +1,68 @@
+<view class="page">
+  <view class="campus-hero">
+    <view class="hero-title">发现校园里的下一场活动</view>
+    <view class="hero-subtitle">社团发布、学生报名、名额实时同步。</view>
+  </view>
+
+  <view wx:if="{{runtimeError}}" class="card status-card">
+    <view class="status-title">运行时错误</view>
+    <view class="status-copy">{{runtimeError}}</view>
+  </view>
+
+  <view class="card status-card">
+    <view class="status-title">首页状态</view>
+    <view class="status-copy">{{debugMessage}}</view>
+  </view>
+
+  <view class="search-box">
+    <input placeholder="搜索活动、社团或地点" value="{{keyword}}" bindinput="onKeywordInput" />
+  </view>
+
+  <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="category-list">
+      <view
+        wx:for="{{categories}}"
+        wx:key="*this"
+        class="category-item {{activeCategory === item ? 'active' : ''}}"
+        data-category="{{item}}"
+        bindtap="onCategoryTap"
+      >{{item}}</view>
+    </view>
+  </scroll-view>
+
+  <view class="section-title">近期活动</view>
+  <view wx:if="{{loading}}" class="card status-card">
+    <view class="status-title">正在加载活动</view>
+    <view class="status-copy">稍等一下，我们正在同步最新的校园活动。</view>
+  </view>
+  <view wx:elif="{{loadFailed}}" class="card status-card">
+    <view class="status-title">活动加载失败</view>
+    <view class="status-copy">请检查云函数是否已部署完成，然后重新进入页面。</view>
+  </view>
+  <view wx:elif="{{filteredActivities.length === 0}}" class="empty">
+    {{keyword ? '没有找到匹配的活动，换个关键词试试。' : '暂时还没有活动，等社团发布后这里就会出现。'}}
+  </view>
+  <view
+    wx:for="{{filteredActivities}}"
+    wx:key="id"
+    class="activity-card card"
+    data-id="{{item.id}}"
+    bindtap="goDetail"
+  >
+    <view class="cover {{item.coverTone}}">
+      <view class="cover-category">{{item.category}}</view>
+    </view>
+    <view class="activity-main">
+      <view class="row space-between">
+        <view class="club-name">{{item.clubName}}</view>
+        <view class="tag {{item.isFull ? 'gray' : ''}}">{{item.isFull ? '已满员' : '报名中'}}</view>
+      </view>
+      <view class="activity-title">{{item.title}}</view>
+      <view class="meta">{{item.startTime}} · {{item.location}}</view>
+      <view class="row space-between progress-row">
+        <view class="muted">已报名 {{item.registeredCount}} / {{item.quota}}</view>
+        <view class="spots">{{item.spotsLeft}} 个名额</view>
+      </view>
+    </view>
+  </view>
+</view>

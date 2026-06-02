@@ -1,0 +1,44 @@
+<view class="page">
+  <view class="campus-hero">
+    <view class="hero-title">社团活动管理</view>
+    <view class="hero-subtitle">发布活动，查看报名名单，维护社团活动信息。</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="card status-card">
+    <view class="status-title">正在读取管理权限</view>
+    <view class="status-copy">我们正在确认你可以管理哪些社团。</view>
+  </view>
+  <view wx:elif="{{loadFailed}}" class="card status-card">
+    <view class="status-title">社团管理加载失败</view>
+    <view class="status-copy">请检查社团管理相关云函数是否已部署完成。</view>
+  </view>
+  <view wx:elif="{{clubs.length === 0}}">
+    <view class="empty">你还没有可管理的社团，请先提交管理员申请。</view>
+  </view>
+  <block wx:else>
+    <view class="club-switch card">
+      <text class="label">当前社团</text>
+      <picker mode="selector" range="{{clubs}}" range-key="name" value="{{clubIndex}}" bindchange="onClubChange">
+        <view class="picker-value">{{selectedClub.name}}</view>
+      </picker>
+      <view class="muted club-intro">{{selectedClub.intro}}</view>
+    </view>
+
+    <button class="primary-btn add-btn" bindtap="createActivity">发布新活动</button>
+
+    <view class="section-title">活动列表</view>
+    <view wx:if="{{activities.length === 0}}" class="empty">这个社团还没有发布活动，先发一条试试。</view>
+    <view wx:for="{{activities}}" wx:key="id" class="card admin-activity">
+      <view class="row space-between">
+        <view class="tag">{{item.category}}</view>
+        <view class="muted">{{item.registeredCount}} / {{item.quota}}</view>
+      </view>
+      <view class="activity-title">{{item.title}}</view>
+      <view class="muted">{{item.startTime}} · {{item.location}}</view>
+      <view class="button-row">
+        <button class="secondary-btn small-btn" data-id="{{item.id}}" bindtap="editActivity">编辑</button>
+        <button class="primary-btn small-btn" data-id="{{item.id}}" bindtap="viewRegistrations">报名名单</button>
+      </view>
+    </view>
+  </block>
+</view>

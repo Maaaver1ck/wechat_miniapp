@@ -1,0 +1,25 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="card status-card">
+    <view class="status-title">正在同步报名记录</view>
+    <view class="status-copy">稍等一下，我们正在读取你最近的报名情况。</view>
+  </view>
+  <view wx:elif="{{loadFailed}}" class="card status-card">
+    <view class="status-title">报名记录加载失败</view>
+    <view class="status-copy">请检查报名相关云函数是否已部署完成。</view>
+  </view>
+  <view wx:elif="{{items.length === 0}}" class="empty">你还没有报名活动，去首页逛逛吧。</view>
+  <view
+    wx:for="{{items}}"
+    wx:key="id"
+    class="registration-card card"
+    data-id="{{item.activity.id}}"
+    bindtap="goDetail"
+  >
+    <view class="row space-between">
+      <view class="tag {{item.status === 'cancelled' ? 'gray' : ''}}">{{item.status === 'active' ? '已报名' : '已取消'}}</view>
+      <view class="muted">{{item.createdAt}}</view>
+    </view>
+    <view class="activity-title">{{item.activity.title}}</view>
+    <view class="muted">{{item.activity.startTime}} · {{item.activity.location}}</view>
+  </view>
+</view>

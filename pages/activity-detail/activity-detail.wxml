@@ -1,0 +1,52 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="card status-card">
+    <view class="status-title">正在加载活动详情</view>
+    <view class="status-copy">稍等一下，我们正在同步这场活动的信息。</view>
+  </view>
+  <view wx:elif="{{loadFailed}}" class="card status-card">
+    <view class="status-title">暂时无法查看活动</view>
+    <view class="status-copy">活动可能已被删除，或云函数还没有部署完成。</view>
+  </view>
+  <block wx:elif="{{activity}}">
+  <view class="detail-cover {{activity.coverTone}}">
+    <view class="detail-cover-inner">
+      <view class="tag">{{activity.category}}</view>
+      <view class="detail-title">{{activity.title}}</view>
+      <view class="detail-club">{{activity.clubName}}</view>
+    </view>
+  </view>
+
+  <view class="card info-card">
+    <view class="info-row">
+      <view class="info-label">活动时间</view>
+      <view class="info-value">{{activity.startTime}} - {{activity.endTime}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">活动地点</view>
+      <view class="info-value">{{activity.location}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">报名截止</view>
+      <view class="info-value">{{activity.deadline}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">剩余名额</view>
+      <view class="info-value">{{activity.spotsLeft}} / {{activity.quota}}</view>
+    </view>
+  </view>
+
+  <view class="section-title">活动介绍</view>
+  <view class="card description">{{activity.description}}</view>
+
+  <view class="footer-space"></view>
+  <view class="action-bar">
+    <button wx:if="{{activity.hasRegistered}}" class="danger-btn" bindtap="cancelRegister" disabled="{{submitting || cancelling}}">
+      {{cancelling ? '取消中...' : '取消报名'}}
+    </button>
+    <button wx:elif="{{activity.isFull}}" class="secondary-btn" disabled>名额已满</button>
+    <button wx:else class="primary-btn" bindtap="register" disabled="{{submitting || cancelling}}">
+      {{submitting ? '报名中...' : '立即报名'}}
+    </button>
+  </view>
+  </block>
+</view>

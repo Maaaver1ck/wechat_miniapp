@@ -1,0 +1,7 @@
+.profile-form {
+  margin-top: 28rpx;
+}
+
+.save-btn {
+  margin-top: 28rpx;
+}

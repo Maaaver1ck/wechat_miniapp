@@ -1,0 +1,34 @@
+.apply-form {
+  margin-top: 28rpx;
+}
+
+.picker-value {
+  min-height: 72rpx;
+  display: flex;
+  align-items: center;
+  color: #20283a;
+  font-weight: 600;
+}
+
+.submit-btn {
+  margin-top: 28rpx;
+}
+
+.application-card {
+  margin-bottom: 24rpx;
+}
+
+.application-club {
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.application-time {
+  margin-top: 12rpx;
+}
+
+.reason {
+  margin-top: 16rpx;
+  color: #5f6b80;
+  line-height: 1.55;
+}

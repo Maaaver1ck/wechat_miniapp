@@ -1,0 +1,14 @@
+.activity-form {
+  margin-top: 28rpx;
+}
+
+.picker-value {
+  min-height: 72rpx;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.save-btn {
+  margin-top: 28rpx;
+}

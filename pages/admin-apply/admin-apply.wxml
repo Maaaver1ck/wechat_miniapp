@@ -1,0 +1,43 @@
+<view class="page">
+  <view class="campus-hero">
+    <view class="hero-title">申请管理社团</view>
+    <view class="hero-subtitle">选择学校已入驻社团，提交后等待平台管理员审核。</view>
+  </view>
+
+  <form class="form-card apply-form" bindsubmit="submitApplication">
+    <view class="field">
+      <text class="label">申请社团</text>
+      <picker mode="selector" range="{{clubs}}" range-key="name" value="{{clubIndex}}" bindchange="onClubChange">
+        <view class="picker-value">{{selectedClubName}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <text class="label">申请说明</text>
+      <textarea name="reason" placeholder="例如：我是该社团现任负责人，希望发布和管理活动。" />
+    </view>
+    <button class="primary-btn submit-btn" form-type="submit" disabled="{{submitting || loading || clubs.length === 0}}">
+      {{submitting ? '提交中...' : '提交申请'}}
+    </button>
+  </form>
+
+  <view class="section-title">我的申请</view>
+  <view wx:if="{{loading}}" class="card status-card">
+    <view class="status-title">正在加载申请信息</view>
+    <view class="status-copy">我们正在同步社团列表和你的申请记录。</view>
+  </view>
+  <view wx:elif="{{loadFailed}}" class="card status-card">
+    <view class="status-title">申请信息加载失败</view>
+    <view class="status-copy">请检查相关云函数是否已部署完成。</view>
+  </view>
+  <view wx:elif="{{applications.length === 0}}" class="empty">还没有提交过申请，选择一个社团试试。</view>
+  <view wx:for="{{applications}}" wx:key="id" class="card application-card">
+    <view class="row space-between">
+      <view class="application-club">{{item.clubName}}</view>
+      <view class="tag {{item.status === 'pending' ? 'warn' : item.status === 'approved' ? '' : 'gray'}}">
+        {{item.statusText}}
+      </view>
+    </view>
+    <view class="muted application-time">{{item.createdAt}}</view>
+    <view class="reason">{{item.reason}}</view>
+  </view>
+</view>

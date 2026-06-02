@@ -1,0 +1,60 @@
+<view class="page">
+  <view class="campus-hero">
+    <view class="hero-title">{{isEdit ? '编辑活动' : '发布活动'}}</view>
+    <view class="hero-subtitle">填写清晰的时间、地点和人数上限，方便同学报名。</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="card status-card">
+    <view class="status-title">正在准备活动表单</view>
+    <view class="status-copy">我们正在读取可管理社团和活动信息。</view>
+  </view>
+  <view wx:elif="{{loadFailed}}" class="card status-card">
+    <view class="status-title">活动表单加载失败</view>
+    <view class="status-copy">请确认社团管理相关云函数已经部署完成。</view>
+  </view>
+  <form wx:else class="form-card activity-form" bindsubmit="submitActivity">
+    <view class="field">
+      <text class="label">所属社团</text>
+      <picker mode="selector" range="{{clubs}}" range-key="name" value="{{clubIndex}}" bindchange="onClubChange">
+        <view class="picker-value">{{selectedClubName}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <text class="label">活动名称</text>
+      <input name="title" value="{{activity.title}}" placeholder="请输入活动名称" />
+    </view>
+    <view class="field">
+      <text class="label">活动分类</text>
+      <picker mode="selector" range="{{categories}}" value="{{categoryIndex}}" bindchange="onCategoryChange">
+        <view class="picker-value">{{selectedCategory}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <text class="label">开始时间</text>
+      <input name="startTime" value="{{activity.startTime}}" placeholder="例如：2026-05-08 19:00" />
+    </view>
+    <view class="field">
+      <text class="label">结束时间</text>
+      <input name="endTime" value="{{activity.endTime}}" placeholder="例如：2026-05-08 21:00" />
+    </view>
+    <view class="field">
+      <text class="label">报名截止</text>
+      <input name="deadline" value="{{activity.deadline}}" placeholder="例如：2026-05-07 22:00" />
+    </view>
+    <view class="field">
+      <text class="label">地点</text>
+      <input name="location" value="{{activity.location}}" placeholder="请输入活动地点" />
+    </view>
+    <view class="field">
+      <text class="label">人数上限</text>
+      <input name="quota" value="{{activity.quota}}" type="number" placeholder="请输入人数上限" />
+    </view>
+    <view class="field">
+      <text class="label">活动介绍</text>
+      <textarea name="description" value="{{activity.description}}" placeholder="说明活动内容、适合人群和注意事项" />
+    </view>
+    <button class="primary-btn save-btn" form-type="submit" disabled="{{submitting || clubs.length === 0}}">
+      {{submitting ? '保存中...' : '保存活动'}}
+    </button>
+  </form>
+</view>

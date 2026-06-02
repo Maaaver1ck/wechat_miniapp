@@ -1,0 +1,110 @@
+.search-box {
+  margin-top: 28rpx;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1rpx solid rgba(255, 255, 255, 0.88);
+  border-radius: 28rpx;
+  padding: 4rpx 26rpx;
+  box-shadow: 0 16rpx 42rpx rgba(73, 90, 124, 0.1);
+}
+
+.category-scroll {
+  margin: 28rpx -30rpx 0;
+  white-space: nowrap;
+}
+
+.category-list {
+  display: flex;
+  gap: 16rpx;
+  padding: 0 30rpx;
+}
+
+.category-item {
+  flex: 0 0 auto;
+  min-width: 104rpx;
+  padding: 17rpx 24rpx;
+  border-radius: 999rpx;
+  color: #5f6b80;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1rpx solid rgba(255, 255, 255, 0.9);
+  text-align: center;
+  box-shadow: 0 10rpx 28rpx rgba(73, 90, 124, 0.08);
+}
+
+.category-item.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #4f6fd9, #38a78f);
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 16rpx 34rpx rgba(79, 111, 217, 0.24);
+}
+
+.activity-card {
+  display: flex;
+  gap: 24rpx;
+  margin-bottom: 26rpx;
+  padding: 20rpx;
+}
+
+.cover {
+  flex: 0 0 168rpx;
+  height: 188rpx;
+  border-radius: 24rpx;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 -28rpx 70rpx rgba(0, 0, 0, 0.18);
+}
+
+.cover.green {
+  background: linear-gradient(145deg, #3e72d6 0%, #50c49a 60%, #d6f0d8 100%);
+}
+
+.cover.blue {
+  background: linear-gradient(145deg, #5567d9 0%, #6fb7ef 58%, #ffe0a6 100%);
+}
+
+.cover.gold {
+  background: linear-gradient(145deg, #f0a85f 0%, #ffd37b 50%, #ffefe2 100%);
+}
+
+.cover-category {
+  position: absolute;
+  left: 18rpx;
+  bottom: 18rpx;
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.18);
+}
+
+.activity-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.club-name {
+  color: #4f6fd9;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.activity-title {
+  margin-top: 14rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.meta {
+  margin-top: 12rpx;
+  color: #737d91;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
+.progress-row {
+  margin-top: 18rpx;
+}
+
+.spots {
+  color: #d07a25;
+  font-size: 24rpx;
+  font-weight: 600;
+}

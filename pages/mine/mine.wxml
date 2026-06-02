@@ -1,0 +1,62 @@
+<view class="page">
+  <view class="profile-card card">
+    <view class="avatar">{{avatarText}}</view>
+    <view class="profile-info">
+      <view class="profile-name">{{profileName}}</view>
+      <view class="muted">{{profileLine}}</view>
+    </view>
+    <view class="tag">{{profileStatus}}</view>
+  </view>
+
+  <view wx:if="{{runtimeError}}" class="card status-card">
+    <view class="status-title">运行时错误</view>
+    <view class="status-copy">{{runtimeError}}</view>
+  </view>
+
+  <view class="openid-card card">
+    <view class="menu-title">云开发 openid</view>
+    <view class="openid-value">{{cloudOpenid || '正在获取...'}}</view>
+  </view>
+
+  <view class="menu card">
+    <view class="menu-item" bindtap="goProfile">
+      <view>
+        <view class="menu-title">学生资料</view>
+        <view class="muted">姓名、学号、学院、专业、手机号</view>
+      </view>
+      <view class="arrow">›</view>
+    </view>
+    <view class="menu-item" bindtap="goRegistrations">
+      <view>
+        <view class="menu-title">我的报名</view>
+        <view class="muted">查看已报名和已取消的活动</view>
+      </view>
+      <view class="arrow">›</view>
+    </view>
+    <view class="menu-item" bindtap="goApply">
+      <view>
+        <view class="menu-title">申请社团管理员</view>
+        <view class="muted">申请后由平台管理员审核</view>
+      </view>
+      <view class="arrow">›</view>
+    </view>
+  </view>
+
+  <view class="section-title">管理入口</view>
+  <view class="menu card">
+    <view class="menu-item" bindtap="goClubAdmin">
+      <view>
+        <view class="menu-title">社团活动管理</view>
+        <view class="muted">{{managedClubs.length ? '管理 ' + managedClubs.length + ' 个社团' : '暂无可管理社团'}}</view>
+      </view>
+      <view class="arrow">›</view>
+    </view>
+    <view wx:if="{{isPlatformAdmin}}" class="menu-item" bindtap="goPlatformReview">
+      <view>
+        <view class="menu-title">平台审核</view>
+        <view class="muted">{{pendingCount}} 个待审核管理员申请</view>
+      </view>
+      <view class="arrow">›</view>
+    </view>
+  </view>
+</view>

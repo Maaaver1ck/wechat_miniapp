@@ -1,0 +1,20 @@
+.student-card {
+  margin-bottom: 22rpx;
+}
+
+.student-name {
+  margin-bottom: 10rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.register-time {
+  margin-top: 14rpx;
+  color: #4f6fd9;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.cancelled {
+  opacity: 0.72;
+}

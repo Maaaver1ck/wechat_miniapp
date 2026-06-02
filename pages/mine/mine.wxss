@@ -1,0 +1,72 @@
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-top: 8rpx;
+}
+
+.avatar {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  color: #ffffff;
+  background: linear-gradient(135deg, #4f6fd9, #38a78f 62%, #f1b35f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42rpx;
+  font-weight: 800;
+  box-shadow: 0 14rpx 34rpx rgba(79, 111, 217, 0.24);
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-name {
+  margin-bottom: 10rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.menu {
+  margin-top: 26rpx;
+  padding: 0 26rpx;
+}
+
+.openid-card {
+  margin-top: 24rpx;
+}
+
+.openid-value {
+  margin-top: 12rpx;
+  color: #4f6fd9;
+  font-size: 24rpx;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #edf1f7;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-title {
+  margin-bottom: 8rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.arrow {
+  color: #a7b0c4;
+  font-size: 46rpx;
+}

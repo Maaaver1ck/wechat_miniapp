@@ -1,0 +1,21 @@
+<view class="page">
+  <view wx:if="{{activity}}" class="campus-hero">
+    <view class="hero-title">{{activity.title}}</view>
+    <view class="hero-subtitle">当前报名 {{activeItems.length}} / {{activity.quota}}</view>
+  </view>
+
+  <view class="section-title">报名学生</view>
+  <view wx:if="{{activeItems.length === 0}}" class="empty">暂无学生报名</view>
+  <view wx:for="{{activeItems}}" wx:key="id" class="card student-card">
+    <view class="student-name">{{item.profileSnapshot.name}}</view>
+    <view class="muted">{{item.profileSnapshot.studentId}} · {{item.profileSnapshot.college}}</view>
+    <view class="muted">{{item.profileSnapshot.major}} · {{item.profileSnapshot.phone}}</view>
+    <view class="register-time">报名时间：{{item.createdAt}}</view>
+  </view>
+
+  <view wx:if="{{cancelledItems.length}}" class="section-title">已取消</view>
+  <view wx:for="{{cancelledItems}}" wx:key="id" class="card student-card cancelled">
+    <view class="student-name">{{item.profileSnapshot.name}}</view>
+    <view class="muted">{{item.profileSnapshot.studentId}} · {{item.cancelledAt}}</view>
+  </view>
+</view>
