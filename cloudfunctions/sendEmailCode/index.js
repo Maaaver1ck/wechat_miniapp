@@ -1,6 +1,6 @@
 const cloud = require('wx-server-sdk');
 const crypto = require('crypto');
-const https = require('https');
+const nodemailer = require('nodemailer');
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
@@ -30,35 +30,35 @@ function hashCode(code, salt) {
   return crypto.createHash('sha256').update(`${code}:${salt}`).digest('hex');
 }
 
-function normalizeFromEmail(value) {
-  let from = String(value || 'onboarding@resend.dev').trim();
-  if (from.startsWith('RESEND_FROM_EMAIL=')) {
-    from = from.slice('RESEND_FROM_EMAIL='.length).trim();
-  }
-  from = from.replace(/^['"]|['"]$/g, '').replace(/（/g, '(').replace(/）/g, ')').replace(/＜/g, '<').replace(/＞/g, '>');
-  return from;
+function readEnv(name, fallback) {
+  return String(process.env[name] || fallback || '').trim();
 }
 
-function isValidFromEmail(value) {
-  const email = '[^\\s<>@]+@[^\\s<>@]+\\.[^\\s<>@]+';
-  return new RegExp(`^${email}$`).test(value) || new RegExp(`^[^<>]+ <${email}>$`).test(value);
-}
+async function sendWithSmtp({ to, code }) {
+  const host = readEnv('SMTP_HOST', 'smtp.qq.com');
+  const port = Number(readEnv('SMTP_PORT', '465'));
+  const secure = readEnv('SMTP_SECURE', 'true') !== 'false';
+  const user = readEnv('SMTP_USER', '653848616@qq.com');
+  const pass = readEnv('SMTP_PASS');
+  const from = readEnv('SMTP_FROM', `校园社团活动 <${user}>`);
 
-function sendWithResend({ to, code }) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = normalizeFromEmail(process.env.RESEND_FROM_EMAIL);
-
-  if (!apiKey) {
-    return Promise.reject(new Error('请先在云函数环境变量中配置 RESEND_API_KEY'));
+  if (!user || !pass) {
+    throw new Error('请先在云函数环境变量中配置 SMTP_USER 和 SMTP_PASS');
   }
 
-  if (!isValidFromEmail(from)) {
-    return Promise.reject(new Error('RESEND_FROM_EMAIL 格式不正确，请填写 onboarding@resend.dev 或 Campus Club <verify@example.com>'));
-  }
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: {
+      user,
+      pass
+    }
+  });
 
-  const body = JSON.stringify({
+  await transporter.sendMail({
     from,
-    to: [to],
+    to,
     subject: '校园社团活动身份认证验证码',
     html: [
       '<p>你好，</p>',
@@ -67,35 +67,6 @@ function sendWithResend({ to, code }) {
       '<p>验证码 10 分钟内有效。如非本人操作，请忽略此邮件。</p>'
     ].join(''),
     text: `你正在绑定上海交通大学邮箱，验证码为：${code}。验证码 10 分钟内有效。`
-  });
-
-  return new Promise((resolve, reject) => {
-    const request = https.request({
-      hostname: 'api.resend.com',
-      path: '/emails',
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(body)
-      }
-    }, response => {
-      let responseText = '';
-      response.on('data', chunk => {
-        responseText += chunk;
-      });
-      response.on('end', () => {
-        if (response.statusCode >= 200 && response.statusCode < 300) {
-          resolve(responseText ? JSON.parse(responseText) : {});
-          return;
-        }
-        reject(new Error(`Resend 发送失败：${responseText || response.statusCode}`));
-      });
-    });
-
-    request.on('error', reject);
-    request.write(body);
-    request.end();
   });
 }
 
@@ -140,7 +111,7 @@ exports.main = async event => {
   const salt = crypto.randomBytes(12).toString('hex');
   const now = Date.now();
 
-  await sendWithResend({
+  await sendWithSmtp({
     to: email,
     code
   });

@@ -261,11 +261,15 @@ const CURRENT_OPENID = 'omhZU3Y6E3KbPY724xQlLOiC8au4';
 - 验证码哈希后保存在 `email_verifications`，不保存明文。
 - 报名活动、申请社团管理员、社团管理操作都需要先完成邮箱认证。
 
-Resend 发信云函数需要配置环境变量：
+QQ 邮箱 SMTP 发信云函数需要配置环境变量：
 
 ```text
-RESEND_API_KEY=你的 Resend API Key
-RESEND_FROM_EMAIL=发件地址，例如 Campus Club <verify@example.com>
+SMTP_HOST=smtp.qq.com
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=653848616@qq.com
+SMTP_PASS=QQ 邮箱 SMTP 授权码
+SMTP_FROM=校园社团活动 <653848616@qq.com>
 ```
 
 ### 7.2 活动浏览和报名
@@ -483,7 +487,7 @@ omhZU3Y6E3KbPY724xQlLOiC8au4
 
 1. 学生进入「学校邮箱认证」页面。
 2. 前端调用 `sendEmailCode` 发送验证码。
-3. 云函数检查邮箱域名和发送频率，并调用 Resend 发送邮件。
+3. 云函数检查邮箱域名和发送频率，并通过 QQ 邮箱 SMTP 发送邮件。
 4. 学生输入验证码，前端调用 `verifyEmailCode`。
 5. 云函数校验验证码，通过后更新 `users.emailVerified`。
 
@@ -618,7 +622,7 @@ return {
 | `login` | 返回当前微信用户身份信息。 |
 | `getProfile` | 查询当前用户资料；没有资料时返回 `profile: null`。 |
 | `saveProfile` | 新增或更新当前用户资料。 |
-| `sendEmailCode` | 使用 Resend 向学校邮箱发送验证码。 |
+| `sendEmailCode` | 使用 QQ 邮箱 SMTP 向学校邮箱发送验证码。 |
 | `verifyEmailCode` | 校验验证码并写入用户认证状态。 |
 | `getHomeData` | 聚合社团、活动和报名数量，返回首页活动列表。 |
 | `getActivityDetail` | 返回单个活动详情、报名人数、剩余名额和当前用户报名状态。 |
@@ -681,7 +685,7 @@ return {
 2. `project.config.json` 的 `appid` 与目标小程序一致。
 3. 已创建 `users`、`clubs`、`activities`、`registrations`、`admin_applications`、`email_verifications` 集合。
 4. 已上传并部署全部云函数，选择「云端安装依赖」。
-5. `sendEmailCode` 云函数已配置 `RESEND_API_KEY` 和 `RESEND_FROM_EMAIL` 环境变量。
+5. `sendEmailCode` 云函数已配置 `SMTP_USER` 和 `SMTP_PASS` 等 SMTP 环境变量。
 6. `login` 云函数可以返回当前用户 `openid`。
 7. `clubs` 集合里至少有一条 `status` 不是 `deleted` 的社团数据。
 8. 学生先在「我的」页面完善资料并完成学校邮箱认证，再测试活动报名。

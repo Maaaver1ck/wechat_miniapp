@@ -92,7 +92,7 @@ Page({
       this.setData({ sending: false });
       wx.showModal({
         title: '发送失败',
-        content: (error && error.errMsg) || (error && error.message) || '请检查 sendEmailCode 云函数和 Resend 环境变量。',
+        content: (error && error.errMsg) || (error && error.message) || '请检查 sendEmailCode 云函数和 SMTP 环境变量。',
         showCancel: false
       });
       return;
