@@ -30,12 +30,30 @@ function hashCode(code, salt) {
   return crypto.createHash('sha256').update(`${code}:${salt}`).digest('hex');
 }
 
+function normalizeFromEmail(value) {
+  let from = String(value || 'onboarding@resend.dev').trim();
+  if (from.startsWith('RESEND_FROM_EMAIL=')) {
+    from = from.slice('RESEND_FROM_EMAIL='.length).trim();
+  }
+  from = from.replace(/^['"]|['"]$/g, '').replace(/（/g, '(').replace(/）/g, ')').replace(/＜/g, '<').replace(/＞/g, '>');
+  return from;
+}
+
+function isValidFromEmail(value) {
+  const email = '[^\\s<>@]+@[^\\s<>@]+\\.[^\\s<>@]+';
+  return new RegExp(`^${email}$`).test(value) || new RegExp(`^[^<>]+ <${email}>$`).test(value);
+}
+
 function sendWithResend({ to, code }) {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL || 'Campus Club <onboarding@resend.dev>';
+  const from = normalizeFromEmail(process.env.RESEND_FROM_EMAIL);
 
   if (!apiKey) {
     return Promise.reject(new Error('请先在云函数环境变量中配置 RESEND_API_KEY'));
+  }
+
+  if (!isValidFromEmail(from)) {
+    return Promise.reject(new Error('RESEND_FROM_EMAIL 格式不正确，请填写 onboarding@resend.dev 或 Campus Club <verify@example.com>'));
   }
 
   const body = JSON.stringify({
