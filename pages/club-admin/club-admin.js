@@ -8,7 +8,8 @@ Page({
     selectedClub: null,
     activities: [],
     loading: true,
-    loadFailed: false
+    loadFailed: false,
+    deletingId: ''
   },
 
   onShow() {
@@ -73,6 +74,43 @@ Page({
   viewRegistrations(event) {
     wx.navigateTo({
       url: `/pages/registration-list/registration-list?id=${event.currentTarget.dataset.id}`
+    });
+  },
+
+  deleteActivity(event) {
+    const { id, title } = event.currentTarget.dataset;
+    if (!id || this.data.deletingId) {
+      return;
+    }
+
+    wx.showModal({
+      title: '删除活动',
+      content: `确认删除「${title || '该活动'}」吗？删除后活动将不再展示，历史报名记录会保留。`,
+      confirmText: '删除',
+      confirmColor: '#b34d45',
+      success: async res => {
+        if (!res.confirm) {
+          return;
+        }
+
+        this.setData({ deletingId: id });
+        try {
+          const result = await cloudApi.deleteActivity(id);
+          if (!result || !result.ok) {
+            this.setData({ deletingId: '' });
+            wx.showToast({ title: (result && result.reason) || '删除失败，请稍后重试', icon: 'none' });
+            return;
+          }
+        } catch (error) {
+          this.setData({ deletingId: '' });
+          wx.showToast({ title: '删除失败，请检查网络或云函数配置', icon: 'none' });
+          return;
+        }
+
+        wx.showToast({ title: '已删除', icon: 'success' });
+        this.setData({ deletingId: '' });
+        this.loadData();
+      }
     });
   }
 });

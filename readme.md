@@ -9,7 +9,7 @@
 - 学生浏览活动、按分类和关键词筛选活动、查看详情、报名和取消报名。
 - 学生维护个人资料，查看自己的报名记录。
 - 学生申请成为社团管理员。
-- 社团管理员发布和编辑本社团活动，查看活动报名名单。
+- 社团管理员发布、编辑和删除本社团活动，查看活动报名名单。
 - 平台管理员审核社团管理员申请。
 
 当前项目为原生微信小程序结构，前端使用 `WXML`、`WXSS`、`JavaScript`，后端使用微信云开发云函数和云数据库。
@@ -61,6 +61,7 @@
     ├── getMyRegistrations
     ├── getClubAdminDataV2
     ├── saveActivity
+    ├── deleteActivity
     ├── getRegistrationList
     ├── getAdminApplicationData
     ├── submitAdminApplication
@@ -114,6 +115,7 @@ cancelRegistration
 getMyRegistrations
 getClubAdminDataV2
 saveActivity
+deleteActivity
 getRegistrationList
 getAdminApplicationData
 submitAdminApplication
@@ -177,6 +179,7 @@ function callFunction(name, data) {
 - `cancelRegistration(activityId)`
 - `saveProfile(profile)`
 - `saveActivity(activity)`
+- `deleteActivity(activityId)`
 - `reviewAdminApplication(applicationId, status)`
 
 ### 6.2 `utils/store.js`
@@ -262,6 +265,7 @@ const CURRENT_OPENID = 'omhZU3Y6E3KbPY724xQlLOiC8au4';
 | --- | --- | --- |
 | `getClubAdminDataV2` | 无 | 获取当前用户可管理社团和活动 |
 | `saveActivity` | `{ activity }` | 创建或编辑活动 |
+| `deleteActivity` | `{ activityId }` | 删除活动，实际将 `activities.status` 更新为 `deleted` |
 | `getRegistrationList` | `{ activityId }` | 获取活动报名名单 |
 
 活动保存字段：
@@ -309,6 +313,7 @@ rejected
 - `app.js`
 - `cloudfunctions/getClubAdminDataV2/index.js`
 - `cloudfunctions/saveActivity/index.js`
+- `cloudfunctions/deleteActivity/index.js`
 - `cloudfunctions/getRegistrationList/index.js`
 - `cloudfunctions/getPlatformReviewData/index.js`
 - `cloudfunctions/reviewAdminApplication/index.js`
@@ -431,7 +436,7 @@ omhZU3Y6E3KbPY724xQlLOiC8au4
 3. 云函数查询当前用户的有效报名记录。
 4. 将报名记录状态更新为 `cancelled`，并写入 `cancelledAt`。
 
-### 9.3 社团管理员发布活动流程
+### 9.3 社团管理员发布和删除活动流程
 
 1. 用户进入「社团管理」，前端调用 `getClubAdminDataV2`。
 2. 云函数根据用户 openid 过滤可管理社团。
@@ -439,6 +444,8 @@ omhZU3Y6E3KbPY724xQlLOiC8au4
 4. 前端调用 `saveActivity`。
 5. 云函数校验活动字段和管理权限。
 6. 新增或更新 `activities`。
+7. 管理员删除活动时，前端调用 `deleteActivity`。
+8. 云函数校验管理权限后将 `activities.status` 更新为 `deleted`，保留历史报名记录。
 
 ### 9.4 管理员申请审核流程
 
@@ -538,7 +545,7 @@ return {
 | `pages/mine` | 我的页面；展示资料状态、云端 openid、报名入口、管理员入口和平台审核入口。 |
 | `pages/my-registrations` | 当前用户报名记录；调用 `getMyRegistrations`。 |
 | `pages/admin-apply` | 社团管理员申请；加载可申请社团和历史申请；提交申请说明。 |
-| `pages/club-admin` | 社团管理员后台；加载可管理社团和活动；进入新建、编辑、名单页面。 |
+| `pages/club-admin` | 社团管理员后台；加载可管理社团和活动；进入新建、编辑、删除、名单页面。 |
 | `pages/activity-form` | 活动创建和编辑表单；保存前校验必填字段和人数上限。 |
 | `pages/registration-list` | 活动报名名单；区分有效报名和已取消报名。 |
 | `pages/platform-review` | 平台管理员审核社团管理员申请；支持通过和拒绝。 |
@@ -561,6 +568,7 @@ return {
 | `submitAdminApplication` | 提交社团管理员申请。 |
 | `getClubAdminDataV2` | 根据当前用户权限返回可管理社团和活动。 |
 | `saveActivity` | 管理员新建或编辑活动。 |
+| `deleteActivity` | 管理员软删除活动，保留活动报名历史。 |
 | `getRegistrationList` | 管理员查看活动报名名单。 |
 | `getPlatformReviewData` | 平台管理员查看待处理和已处理申请。 |
 | `reviewAdminApplication` | 平台管理员审核申请；通过后写入社团管理员列表。 |

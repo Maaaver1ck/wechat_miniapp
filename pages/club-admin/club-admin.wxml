@@ -38,6 +38,9 @@
       <view class="button-row">
         <button class="secondary-btn small-btn" data-id="{{item.id}}" bindtap="editActivity">编辑</button>
         <button class="primary-btn small-btn" data-id="{{item.id}}" bindtap="viewRegistrations">报名名单</button>
+        <button class="danger-btn small-btn" data-id="{{item.id}}" data-title="{{item.title}}" disabled="{{deletingId === item.id}}" bindtap="deleteActivity">
+          {{deletingId === item.id ? '删除中' : '删除'}}
+        </button>
       </view>
     </view>
   </block>

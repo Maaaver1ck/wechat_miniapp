@@ -32,11 +32,12 @@
 
 .button-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 18rpx;
   margin-top: 26rpx;
 }
 
 .small-btn {
-  flex: 1;
+  flex: 1 1 180rpx;
   min-height: 78rpx;
 }

@@ -56,6 +56,12 @@ function saveActivity(activity) {
   });
 }
 
+function deleteActivity(activityId) {
+  return callFunction('deleteActivity', {
+    activityId
+  });
+}
+
 function getRegistrationList(activityId) {
   return callFunction('getRegistrationList', {
     activityId
@@ -94,6 +100,7 @@ module.exports = {
   getMyRegistrations,
   getClubAdminData,
   saveActivity,
+  deleteActivity,
   getRegistrationList,
   getAdminApplicationData,
   submitAdminApplication,
