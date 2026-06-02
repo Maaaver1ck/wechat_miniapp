@@ -26,6 +26,13 @@
       </view>
       <view class="arrow">›</view>
     </view>
+    <view class="menu-item" bindtap="goEmailAuth">
+      <view>
+        <view class="menu-title">学校邮箱认证</view>
+        <view class="muted">{{emailLine}}</view>
+      </view>
+      <view class="tag {{profile.emailVerified ? '' : 'warn'}}">{{emailStatus}}</view>
+    </view>
     <view class="menu-item" bindtap="goRegistrations">
       <view>
         <view class="menu-title">我的报名</view>

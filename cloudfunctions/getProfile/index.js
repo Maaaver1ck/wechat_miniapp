@@ -30,7 +30,11 @@ exports.main = async () => {
       college: user.college,
       major: user.major,
       phone: user.phone,
-      completed: Boolean(user.completed)
+      completed: Boolean(user.completed),
+      schoolEmail: user.schoolEmail || '',
+      emailVerified: Boolean(user.emailVerified),
+      emailVerifiedAt: user.emailVerifiedAt || null,
+      identityStatus: user.identityStatus || (user.emailVerified ? 'verified' : 'unverified')
     }
   };
 };

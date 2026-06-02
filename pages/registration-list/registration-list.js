@@ -22,7 +22,11 @@ Page({
     try {
       const result = await cloudApi.getRegistrationList(this.activityId);
       if (!result || !result.ok) {
-        wx.showToast({ title: result.reason || '获取名单失败', icon: 'none' });
+        if (result && result.needEmailAuth) {
+          wx.navigateTo({ url: '/pages/email-auth/email-auth' });
+          return;
+        }
+        wx.showToast({ title: (result && result.reason) || '获取名单失败', icon: 'none' });
         return;
       }
       this.setData({

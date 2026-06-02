@@ -45,6 +45,15 @@ exports.main = async event => {
     }).limit(1).get();
   }
 
+  const existingUser = existing.data[0] || null;
+  const existingBelongsToCurrentUser = Boolean(existingUser && (existingUser._openid === OPENID || existingUser.openid === OPENID));
+  if (existingUser && !existingBelongsToCurrentUser && existingUser.emailVerified) {
+    return {
+      ok: false,
+      reason: '该学号已绑定其他账号'
+    };
+  }
+
   const data = {
     _openid: OPENID,
     openid: OPENID,
@@ -52,6 +61,13 @@ exports.main = async event => {
     completed: true,
     updatedAt: db.serverDate()
   };
+
+  if (existingUser && !existingBelongsToCurrentUser) {
+    data.schoolEmail = '';
+    data.emailVerified = false;
+    data.emailVerifiedAt = null;
+    data.identityStatus = 'unverified';
+  }
 
   if (existing.data.length) {
     await collection.doc(existing.data[0]._id).update({
@@ -71,7 +87,11 @@ exports.main = async event => {
     profile: {
       openid: OPENID,
       ...profile,
-      completed: true
+      completed: true,
+      schoolEmail: existingBelongsToCurrentUser ? existingUser.schoolEmail || '' : '',
+      emailVerified: Boolean(existingBelongsToCurrentUser && existingUser.emailVerified),
+      emailVerifiedAt: existingBelongsToCurrentUser ? existingUser.emailVerifiedAt || null : null,
+      identityStatus: existingBelongsToCurrentUser ? existingUser.identityStatus || 'unverified' : 'unverified'
     }
   };
 };

@@ -1,0 +1,29 @@
+.verified-card {
+  margin-top: 24rpx;
+}
+
+.auth-form {
+  margin-top: 26rpx;
+}
+
+.code-field {
+  display: flex;
+  align-items: flex-end;
+  gap: 18rpx;
+}
+
+.code-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.code-btn {
+  width: 220rpx;
+  min-height: 72rpx;
+  font-size: 26rpx;
+  box-shadow: none;
+}
+
+.submit-btn {
+  margin-top: 28rpx;
+}

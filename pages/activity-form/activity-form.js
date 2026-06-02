@@ -40,6 +40,11 @@ Page({
 
     try {
       const adminResult = await cloudApi.getClubAdminData();
+      if (adminResult && adminResult.needEmailAuth) {
+        this.setData({ loading: false });
+        wx.navigateTo({ url: '/pages/email-auth/email-auth' });
+        return;
+      }
       const cloudClubs = adminResult && adminResult.ok ? adminResult.clubs || [] : clubs;
       let cloudActivity = activity || {};
 
@@ -116,7 +121,11 @@ Page({
       const result = await cloudApi.saveActivity(payload);
       if (!result || !result.ok) {
         this.setData({ submitting: false });
-        wx.showToast({ title: result.reason || '保存失败，请检查活动信息', icon: 'none' });
+        if (result && result.needEmailAuth) {
+          wx.navigateTo({ url: '/pages/email-auth/email-auth' });
+          return;
+        }
+        wx.showToast({ title: (result && result.reason) || '保存失败，请检查活动信息', icon: 'none' });
         return;
       }
       savedId = result.id || savedId;

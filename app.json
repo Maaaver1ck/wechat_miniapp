@@ -3,6 +3,7 @@
     "pages/home/home",
     "pages/activity-detail/activity-detail",
     "pages/profile-form/profile-form",
+    "pages/email-auth/email-auth",
     "pages/mine/mine",
     "pages/my-registrations/my-registrations",
     "pages/club-admin/club-admin",

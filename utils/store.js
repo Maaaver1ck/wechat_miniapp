@@ -20,14 +20,16 @@ function getProfile() {
 }
 
 function saveProfile(profile) {
+  const completed = Boolean(profile.completed || (profile.name && profile.studentId && profile.college && profile.major && profile.phone));
   const normalized = {
-    openid: CURRENT_OPENID,
+    ...profile,
+    openid: profile.openid || CURRENT_OPENID,
     name: profile.name,
     studentId: profile.studentId,
     college: profile.college,
     major: profile.major,
     phone: profile.phone,
-    completed: true
+    completed
   };
   write(KEYS.profile, normalized);
   return normalized;
@@ -38,10 +40,16 @@ function isProfileComplete() {
   return Boolean(profile && profile.name && profile.studentId && profile.college && profile.major && profile.phone);
 }
 
+function isEmailVerified() {
+  const profile = getProfile();
+  return Boolean(profile && profile.emailVerified);
+}
+
 module.exports = {
   CURRENT_OPENID,
   CATEGORIES,
   getProfile,
   saveProfile,
-  isProfileComplete
+  isProfileComplete,
+  isEmailVerified
 };

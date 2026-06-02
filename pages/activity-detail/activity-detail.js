@@ -61,6 +61,13 @@ Page({
           });
           return;
         }
+        if (result && result.needEmailAuth) {
+          const redirect = encodeURIComponent(`/pages/activity-detail/activity-detail?id=${this.data.id}`);
+          wx.navigateTo({
+            url: `/pages/email-auth/email-auth?redirect=${redirect}`
+          });
+          return;
+        }
         wx.showToast({ title: result.reason || '报名失败，请稍后再试', icon: 'none' });
         return;
       }

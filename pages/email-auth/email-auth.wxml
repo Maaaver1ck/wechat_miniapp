@@ -1,0 +1,31 @@
+<view class="page">
+  <view class="campus-hero">
+    <view class="hero-title">学校邮箱认证</view>
+    <view class="hero-subtitle">绑定上海交通大学邮箱后即可报名活动和使用社团管理功能。</view>
+  </view>
+
+  <view wx:if="{{profile.emailVerified}}" class="card verified-card">
+    <view class="status-title">已完成认证</view>
+    <view class="status-copy">{{profile.schoolEmail}}</view>
+  </view>
+
+  <view class="form-card auth-form">
+    <view class="field">
+      <text class="label">学校邮箱</text>
+      <input name="email" value="{{email}}" placeholder="name@sjtu.edu.cn" bindinput="onEmailInput" />
+    </view>
+    <view class="field code-field">
+      <view class="code-input">
+        <text class="label">验证码</text>
+        <input name="code" value="{{code}}" maxlength="6" placeholder="6 位数字" bindinput="onCodeInput" />
+      </view>
+      <button class="secondary-btn code-btn" disabled="{{sending || countdown > 0}}" bindtap="sendCode">
+        {{countdown > 0 ? countdown + 's' : '发送验证码'}}
+      </button>
+    </view>
+  </view>
+
+  <button class="primary-btn submit-btn" disabled="{{verifying}}" bindtap="verifyCode">
+    {{verifying ? '认证中' : '完成认证'}}
+  </button>
+</view>

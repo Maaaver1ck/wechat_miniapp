@@ -60,6 +60,18 @@ exports.main = async () => {
   const openid = String(OPENID || '').trim();
   const isPlatformAdmin = isPlatformAdminOpenid(openid);
 
+  const userResult = await db.collection('users').where({
+    _openid: OPENID
+  }).limit(1).get();
+  const user = userResult.data[0];
+  if (!user || !user.emailVerified) {
+    return {
+      ok: false,
+      reason: '请先完成学校邮箱认证',
+      needEmailAuth: true
+    };
+  }
+
   const clubsResult = await db.collection('clubs').limit(100).get();
   const clubs = clubsResult.data
     .filter(club => club.status !== 'deleted')

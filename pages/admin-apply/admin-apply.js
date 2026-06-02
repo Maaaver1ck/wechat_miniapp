@@ -71,6 +71,12 @@ Page({
       return;
     }
 
+    if (!store.isEmailVerified()) {
+      wx.showToast({ title: '请先完成学校邮箱认证', icon: 'none' });
+      wx.navigateTo({ url: '/pages/email-auth/email-auth' });
+      return;
+    }
+
     const club = this.data.clubs[this.data.clubIndex];
     const reason = event.detail.value.reason.trim();
     if (!club || !reason) {
@@ -85,6 +91,10 @@ Page({
         this.setData({ submitting: false });
         if (result && result.needProfile) {
           wx.navigateTo({ url: '/pages/profile-form/profile-form' });
+          return;
+        }
+        if (result && result.needEmailAuth) {
+          wx.navigateTo({ url: '/pages/email-auth/email-auth' });
           return;
         }
         wx.showToast({ title: result.reason || '提交失败，请稍后重试', icon: 'none' });

@@ -30,6 +30,14 @@ exports.main = async event => {
     };
   }
 
+  if (!user.emailVerified) {
+    return {
+      ok: false,
+      reason: '请先完成学校邮箱认证',
+      needEmailAuth: true
+    };
+  }
+
   const activityResult = await db.collection('activities').doc(activityId).get();
   const activity = activityResult.data;
 
@@ -77,7 +85,8 @@ exports.main = async event => {
         studentId: user.studentId,
         college: user.college,
         major: user.major,
-        phone: user.phone
+        phone: user.phone,
+        schoolEmail: user.schoolEmail || ''
       },
       createdAt: db.serverDate(),
       updatedAt: db.serverDate()

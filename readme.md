@@ -8,6 +8,7 @@
 
 - 学生浏览活动、按分类和关键词筛选活动、查看详情、报名和取消报名。
 - 学生维护个人资料，查看自己的报名记录。
+- 学生绑定 `sjtu.edu.cn` 学校邮箱完成身份认证。
 - 学生申请成为社团管理员。
 - 社团管理员发布、编辑和删除本社团活动，查看活动报名名单。
 - 平台管理员审核社团管理员申请。
@@ -43,6 +44,7 @@
 │   ├── home                       # 活动首页
 │   ├── activity-detail            # 活动详情、报名、取消报名
 │   ├── profile-form               # 学生资料表单
+│   ├── email-auth                 # 学校邮箱认证
 │   ├── mine                       # 我的页面
 │   ├── my-registrations           # 我的报名记录
 │   ├── club-admin                 # 社团管理员后台
@@ -54,6 +56,8 @@
     ├── login
     ├── getProfile
     ├── saveProfile
+    ├── sendEmailCode
+    ├── verifyEmailCode
     ├── getHomeData
     ├── getActivityDetail
     ├── registerActivity
@@ -108,6 +112,8 @@ wx.cloud.init({
 login
 getProfile
 saveProfile
+sendEmailCode
+verifyEmailCode
 getHomeData
 getActivityDetail
 registerActivity
@@ -133,6 +139,7 @@ clubs
 activities
 registrations
 admin_applications
+email_verifications
 ```
 
 建议云函数端使用服务端权限访问数据库，客户端不直接写核心业务集合。
@@ -146,6 +153,7 @@ admin_applications
 | 活动首页 | `pages/home/home` | 活动列表、分类筛选、关键词搜索 |
 | 活动详情 | `pages/activity-detail/activity-detail` | 查看活动详情、报名、取消报名 |
 | 个人资料 | `pages/profile-form/profile-form` | 新增或更新学生资料 |
+| 学校邮箱认证 | `pages/email-auth/email-auth` | 发送验证码、绑定 `sjtu.edu.cn` 邮箱 |
 | 我的 | `pages/mine/mine` | 资料入口、报名记录、管理员入口、openid 显示 |
 | 我的报名 | `pages/my-registrations/my-registrations` | 当前用户报名记录 |
 | 社团管理 | `pages/club-admin/club-admin` | 管理可负责社团的活动 |
@@ -178,6 +186,8 @@ function callFunction(name, data) {
 - `registerActivity(activityId)`
 - `cancelRegistration(activityId)`
 - `saveProfile(profile)`
+- `sendEmailCode(email)`
+- `verifyEmailCode(email, code)`
 - `saveActivity(activity)`
 - `deleteActivity(activityId)`
 - `reviewAdminApplication(applicationId, status)`
@@ -227,6 +237,8 @@ const CURRENT_OPENID = 'omhZU3Y6E3KbPY724xQlLOiC8au4';
 | `login` | 无 | 返回当前用户 `openid`、`appid`、`unionid` |
 | `getProfile` | 无 | 获取当前用户资料 |
 | `saveProfile` | `{ profile }` | 保存当前用户资料 |
+| `sendEmailCode` | `{ email }` | 向 `sjtu.edu.cn` 学校邮箱发送验证码 |
+| `verifyEmailCode` | `{ email, code }` | 校验验证码并绑定学校邮箱 |
 
 `profile` 字段：
 
@@ -236,8 +248,24 @@ const CURRENT_OPENID = 'omhZU3Y6E3KbPY724xQlLOiC8au4';
   studentId: '学号',
   college: '学院',
   major: '专业',
-  phone: '手机号'
+  phone: '手机号',
+  schoolEmail: '学校邮箱',
+  emailVerified: true
 }
+```
+
+学校邮箱认证要求：
+
+- 邮箱域名必须严格为 `sjtu.edu.cn`。
+- 验证码 10 分钟内有效，60 秒内不能重复发送。
+- 验证码哈希后保存在 `email_verifications`，不保存明文。
+- 报名活动、申请社团管理员、社团管理操作都需要先完成邮箱认证。
+
+Resend 发信云函数需要配置环境变量：
+
+```text
+RESEND_API_KEY=你的 Resend API Key
+RESEND_FROM_EMAIL=发件地址，例如 Campus Club <verify@example.com>
 ```
 
 ### 7.2 活动浏览和报名
@@ -343,6 +371,10 @@ omhZU3Y6E3KbPY724xQlLOiC8au4
 | `major` | string | 专业 |
 | `phone` | string | 手机号 |
 | `completed` | boolean | 资料是否完整 |
+| `schoolEmail` | string | 已绑定学校邮箱 |
+| `emailVerified` | boolean | 是否完成学校邮箱认证 |
+| `emailVerifiedAt` | Date | 邮箱认证时间 |
+| `identityStatus` | string | 身份认证状态，当前使用 `verified` 或 `unverified` |
 | `createdAt` | Date | 创建时间 |
 | `updatedAt` | Date | 更新时间 |
 
@@ -419,6 +451,24 @@ omhZU3Y6E3KbPY724xQlLOiC8au4
 | `reviewedAt` | Date | 审核时间 |
 | `updatedAt` | Date | 更新时间 |
 
+### 8.6 `email_verifications`
+
+存储学校邮箱验证码记录。
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `_id` | string | 验证记录 ID |
+| `_openid` | string | 发起认证用户 openid |
+| `email` | string | 学校邮箱 |
+| `codeHash` | string | 验证码哈希 |
+| `codeSalt` | string | 哈希盐值 |
+| `expiresAt` | Date | 过期时间 |
+| `attempts` | number | 已尝试次数 |
+| `used` | boolean | 是否已使用 |
+| `createdAt` | Date | 创建时间 |
+| `usedAt` | Date | 使用时间 |
+| `updatedAt` | Date | 更新时间 |
+
 ## 9. 业务流程
 
 ### 9.1 学生报名流程
@@ -426,8 +476,16 @@ omhZU3Y6E3KbPY724xQlLOiC8au4
 1. 学生进入首页，前端调用 `getHomeData`。
 2. 学生进入活动详情，前端调用 `getActivityDetail`。
 3. 学生点击报名，前端调用 `registerActivity`。
-4. 云函数检查学生资料、活动状态、重复报名和名额。
+4. 云函数检查学生资料、学校邮箱认证、活动状态、重复报名和名额。
 5. 报名成功后写入 `registrations`，状态为 `active`。
+
+### 9.1.1 学校邮箱认证流程
+
+1. 学生进入「学校邮箱认证」页面。
+2. 前端调用 `sendEmailCode` 发送验证码。
+3. 云函数检查邮箱域名和发送频率，并调用 Resend 发送邮件。
+4. 学生输入验证码，前端调用 `verifyEmailCode`。
+5. 云函数校验验证码，通过后更新 `users.emailVerified`。
 
 ### 9.2 取消报名流程
 
@@ -459,8 +517,8 @@ omhZU3Y6E3KbPY724xQlLOiC8au4
 
 | 角色 | 判断方式 | 权限 |
 | --- | --- | --- |
-| 普通学生 | 已登录微信用户 | 浏览活动、完善资料、报名、取消报名、申请管理员 |
-| 社团管理员 | `clubs.adminOpenids` 包含当前 `OPENID` | 管理对应社团活动、查看报名名单 |
+| 普通学生 | 已登录微信用户，报名前需完成学校邮箱认证 | 浏览活动、完善资料、报名、取消报名、申请管理员 |
+| 社团管理员 | `clubs.adminOpenids` 包含当前 `OPENID`，且完成学校邮箱认证 | 管理对应社团活动、查看报名名单 |
 | 平台管理员 | openid 在 `PLATFORM_ADMIN_OPENIDS` 中 | 审核管理员申请、管理所有社团活动 |
 
 安全注意事项：
@@ -542,6 +600,7 @@ return {
 | `pages/home` | 首页活动列表；调用 `getHomeData`；支持分类筛选和关键词搜索。 |
 | `pages/activity-detail` | 活动详情；显示名额、社团、报名状态；调用报名和取消报名接口。 |
 | `pages/profile-form` | 学生资料表单；调用 `getProfile` 和 `saveProfile`。 |
+| `pages/email-auth` | 学校邮箱认证；发送验证码并绑定 `sjtu.edu.cn` 邮箱。 |
 | `pages/mine` | 我的页面；展示资料状态、云端 openid、报名入口、管理员入口和平台审核入口。 |
 | `pages/my-registrations` | 当前用户报名记录；调用 `getMyRegistrations`。 |
 | `pages/admin-apply` | 社团管理员申请；加载可申请社团和历史申请；提交申请说明。 |
@@ -559,6 +618,8 @@ return {
 | `login` | 返回当前微信用户身份信息。 |
 | `getProfile` | 查询当前用户资料；没有资料时返回 `profile: null`。 |
 | `saveProfile` | 新增或更新当前用户资料。 |
+| `sendEmailCode` | 使用 Resend 向学校邮箱发送验证码。 |
+| `verifyEmailCode` | 校验验证码并写入用户认证状态。 |
 | `getHomeData` | 聚合社团、活动和报名数量，返回首页活动列表。 |
 | `getActivityDetail` | 返回单个活动详情、报名人数、剩余名额和当前用户报名状态。 |
 | `registerActivity` | 校验用户资料、重复报名和名额后创建报名记录。 |
@@ -610,7 +671,7 @@ return {
 }
 ```
 
-推荐先手动创建几个 `clubs`，再使用小程序里的「社团管理」页面创建活动。`users`、`registrations`、`admin_applications` 可由资料保存、报名和申请流程自动产生。
+推荐先手动创建几个 `clubs`，再使用小程序里的「社团管理」页面创建活动。`users`、`registrations`、`admin_applications`、`email_verifications` 可由资料保存、报名、申请和学校邮箱认证流程自动产生。
 
 ## 14. 联调检查清单
 
@@ -618,14 +679,15 @@ return {
 
 1. `app.js` 的 `env` 与微信开发者工具当前云环境一致。
 2. `project.config.json` 的 `appid` 与目标小程序一致。
-3. 已创建 `users`、`clubs`、`activities`、`registrations`、`admin_applications` 集合。
+3. 已创建 `users`、`clubs`、`activities`、`registrations`、`admin_applications`、`email_verifications` 集合。
 4. 已上传并部署全部云函数，选择「云端安装依赖」。
-5. `login` 云函数可以返回当前用户 `openid`。
-6. `clubs` 集合里至少有一条 `status` 不是 `deleted` 的社团数据。
-7. 学生先在「我的」页面完善资料，再测试活动报名。
-8. 如需测试社团管理员，把当前用户 `openid` 加入目标社团的 `adminOpenids`。
-9. 如需测试平台审核，同步修改 `app.js` 和相关云函数中的平台管理员 openid。
-10. 首页若无数据，优先检查 `getHomeData` 是否部署成功以及 `activities` 是否存在非 `deleted` 活动。
+5. `sendEmailCode` 云函数已配置 `RESEND_API_KEY` 和 `RESEND_FROM_EMAIL` 环境变量。
+6. `login` 云函数可以返回当前用户 `openid`。
+7. `clubs` 集合里至少有一条 `status` 不是 `deleted` 的社团数据。
+8. 学生先在「我的」页面完善资料并完成学校邮箱认证，再测试活动报名。
+9. 如需测试社团管理员，把当前用户 `openid` 加入目标社团的 `adminOpenids`。
+10. 如需测试平台审核，同步修改 `app.js` 和相关云函数中的平台管理员 openid。
+11. 首页若无数据，优先检查 `getHomeData` 是否部署成功以及 `activities` 是否存在非 `deleted` 活动。
 
 ## 15. 当前已知注意事项
 

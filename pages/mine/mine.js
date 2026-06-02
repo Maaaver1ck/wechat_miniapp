@@ -8,6 +8,8 @@ Page({
     profileName: '未完善资料',
     profileLine: '报名活动前需要先完善资料',
     profileStatus: '待完善',
+    emailStatus: '未认证',
+    emailLine: '绑定 sjtu.edu.cn 学校邮箱',
     cloudOpenid: '',
     managedClubs: [],
     isPlatformAdmin: true,
@@ -33,6 +35,8 @@ Page({
       profileName: profile.name || '未完善资料',
       profileLine: profile.completed ? `${profile.college} · ${profile.major}` : '报名活动前需要先完善资料',
       profileStatus: profile.completed ? '已完善' : '待完善',
+      emailStatus: profile.emailVerified ? '已认证' : '未认证',
+      emailLine: profile.emailVerified ? profile.schoolEmail : '报名和社团管理前需要认证',
       isPlatformAdmin: app.globalData.platformAdminOpenids.includes(store.CURRENT_OPENID)
     });
   },
@@ -88,6 +92,10 @@ Page({
 
   goProfile() {
     wx.navigateTo({ url: '/pages/profile-form/profile-form' });
+  },
+
+  goEmailAuth() {
+    wx.navigateTo({ url: '/pages/email-auth/email-auth' });
   },
 
   goRegistrations() {

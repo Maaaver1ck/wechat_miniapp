@@ -29,6 +29,11 @@ Page({
         this.setData({ loading: false });
         return;
       }
+      if (result && result.needEmailAuth) {
+        this.setData({ loading: false });
+        wx.navigateTo({ url: '/pages/email-auth/email-auth' });
+        return;
+      }
     } catch (error) {
       console.warn('getClubAdminData failed', error);
     }
@@ -98,6 +103,10 @@ Page({
           const result = await cloudApi.deleteActivity(id);
           if (!result || !result.ok) {
             this.setData({ deletingId: '' });
+            if (result && result.needEmailAuth) {
+              wx.navigateTo({ url: '/pages/email-auth/email-auth' });
+              return;
+            }
             wx.showToast({ title: (result && result.reason) || '删除失败，请稍后重试', icon: 'none' });
             return;
           }

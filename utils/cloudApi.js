@@ -20,6 +20,19 @@ function saveProfile(profile) {
   });
 }
 
+function sendEmailCode(email) {
+  return callFunction('sendEmailCode', {
+    email
+  });
+}
+
+function verifyEmailCode(email, code) {
+  return callFunction('verifyEmailCode', {
+    email,
+    code
+  });
+}
+
 function getHomeData() {
   return callFunction('getHomeData');
 }
@@ -93,6 +106,8 @@ function reviewAdminApplication(applicationId, status) {
 module.exports = {
   getProfile,
   saveProfile,
+  sendEmailCode,
+  verifyEmailCode,
   getHomeData,
   getActivityDetail,
   registerActivity,

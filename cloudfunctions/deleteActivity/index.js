@@ -41,6 +41,13 @@ async function canManageClub(openid, clubId) {
   return Boolean(club && getAdminOpenids(club).includes(openid));
 }
 
+async function isEmailVerified(openid) {
+  const result = await db.collection('users').where({
+    _openid: openid
+  }).limit(1).get();
+  return Boolean(result.data[0] && result.data[0].emailVerified);
+}
+
 exports.main = async event => {
   const { OPENID } = cloud.getWXContext();
   const activityId = String(event.activityId || '').trim();
@@ -49,6 +56,14 @@ exports.main = async event => {
     return {
       ok: false,
       reason: '缺少活动 ID'
+    };
+  }
+
+  if (!(await isEmailVerified(OPENID))) {
+    return {
+      ok: false,
+      reason: '请先完成学校邮箱认证',
+      needEmailAuth: true
     };
   }
 
