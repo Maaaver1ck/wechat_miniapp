@@ -9,7 +9,7 @@ cloud.init({
 const db = cloud.database();
 const _ = db.command;
 
-const EMAIL_DOMAIN = 'sjtu.edu.cn';
+const EMAIL_DOMAINS = ['sjtu.edu.cn', 'alumni.sjtu.edu.cn'];
 const CODE_TTL_MS = 10 * 60 * 1000;
 const SEND_COOLDOWN_MS = 60 * 1000;
 
@@ -19,7 +19,7 @@ function normalizeEmail(value) {
 
 function isSchoolEmail(email) {
   const parts = email.split('@');
-  return parts.length === 2 && Boolean(parts[0]) && parts[1] === EMAIL_DOMAIN;
+  return parts.length === 2 && Boolean(parts[0]) && EMAIL_DOMAINS.includes(parts[1]);
 }
 
 function createCode() {
@@ -77,7 +77,7 @@ exports.main = async event => {
   if (!isSchoolEmail(email)) {
     return {
       ok: false,
-      reason: '请填写 sjtu.edu.cn 学校邮箱'
+      reason: '请填写 sjtu.edu.cn 或 alumni.sjtu.edu.cn 学校邮箱'
     };
   }
 

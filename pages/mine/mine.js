@@ -9,7 +9,7 @@ Page({
     profileLine: '报名活动前需要先完善资料',
     profileStatus: '待完善',
     emailStatus: '未认证',
-    emailLine: '绑定 sjtu.edu.cn 学校邮箱',
+    emailLine: '绑定交大学校邮箱',
     cloudOpenid: '',
     managedClubs: [],
     isPlatformAdmin: true,

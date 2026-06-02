@@ -8,7 +8,7 @@
 
 - 学生浏览活动、按分类和关键词筛选活动、查看详情、报名和取消报名。
 - 学生维护个人资料，查看自己的报名记录。
-- 学生绑定 `sjtu.edu.cn` 学校邮箱完成身份认证。
+- 学生绑定 `sjtu.edu.cn` 或 `alumni.sjtu.edu.cn` 学校邮箱完成身份认证。
 - 学生申请成为社团管理员。
 - 社团管理员发布、编辑和删除本社团活动，查看活动报名名单。
 - 平台管理员审核社团管理员申请。
@@ -153,7 +153,7 @@ email_verifications
 | 活动首页 | `pages/home/home` | 活动列表、分类筛选、关键词搜索 |
 | 活动详情 | `pages/activity-detail/activity-detail` | 查看活动详情、报名、取消报名 |
 | 个人资料 | `pages/profile-form/profile-form` | 新增或更新学生资料 |
-| 学校邮箱认证 | `pages/email-auth/email-auth` | 发送验证码、绑定 `sjtu.edu.cn` 邮箱 |
+| 学校邮箱认证 | `pages/email-auth/email-auth` | 发送验证码、绑定交大学校邮箱 |
 | 我的 | `pages/mine/mine` | 资料入口、报名记录、管理员入口、openid 显示 |
 | 我的报名 | `pages/my-registrations/my-registrations` | 当前用户报名记录 |
 | 社团管理 | `pages/club-admin/club-admin` | 管理可负责社团的活动 |
@@ -237,7 +237,7 @@ const CURRENT_OPENID = 'omhZU3Y6E3KbPY724xQlLOiC8au4';
 | `login` | 无 | 返回当前用户 `openid`、`appid`、`unionid` |
 | `getProfile` | 无 | 获取当前用户资料 |
 | `saveProfile` | `{ profile }` | 保存当前用户资料 |
-| `sendEmailCode` | `{ email }` | 向 `sjtu.edu.cn` 学校邮箱发送验证码 |
+| `sendEmailCode` | `{ email }` | 向交大学校邮箱发送验证码 |
 | `verifyEmailCode` | `{ email, code }` | 校验验证码并绑定学校邮箱 |
 
 `profile` 字段：
@@ -256,7 +256,7 @@ const CURRENT_OPENID = 'omhZU3Y6E3KbPY724xQlLOiC8au4';
 
 学校邮箱认证要求：
 
-- 邮箱域名必须严格为 `sjtu.edu.cn`。
+- 邮箱域名必须为 `sjtu.edu.cn` 或 `alumni.sjtu.edu.cn`。
 - 验证码 10 分钟内有效，60 秒内不能重复发送。
 - 验证码哈希后保存在 `email_verifications`，不保存明文。
 - 报名活动、申请社团管理员、社团管理操作都需要先完成邮箱认证。
@@ -605,7 +605,7 @@ return {
 | `pages/home` | 首页活动列表；调用 `getHomeData`；支持分类筛选和关键词搜索。 |
 | `pages/activity-detail` | 活动详情；显示名额、社团、报名状态；调用报名和取消报名接口。 |
 | `pages/profile-form` | 学生资料表单；调用 `getProfile` 和 `saveProfile`。 |
-| `pages/email-auth` | 学校邮箱认证；发送验证码并绑定 `sjtu.edu.cn` 邮箱。 |
+| `pages/email-auth` | 学校邮箱认证；发送验证码并绑定交大学校邮箱。 |
 | `pages/mine` | 我的页面；展示资料状态、云端 openid、报名入口、管理员入口和平台审核入口。 |
 | `pages/my-registrations` | 当前用户报名记录；调用 `getMyRegistrations`。 |
 | `pages/admin-apply` | 社团管理员申请；加载可申请社团和历史申请；提交申请说明。 |

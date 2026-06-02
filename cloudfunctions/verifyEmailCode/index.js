@@ -8,7 +8,7 @@ cloud.init({
 const db = cloud.database();
 const _ = db.command;
 
-const EMAIL_DOMAIN = 'sjtu.edu.cn';
+const EMAIL_DOMAINS = ['sjtu.edu.cn', 'alumni.sjtu.edu.cn'];
 const MAX_ATTEMPTS = 5;
 
 function normalizeEmail(value) {
@@ -21,7 +21,7 @@ function normalizeCode(value) {
 
 function isSchoolEmail(email) {
   const parts = email.split('@');
-  return parts.length === 2 && Boolean(parts[0]) && parts[1] === EMAIL_DOMAIN;
+  return parts.length === 2 && Boolean(parts[0]) && EMAIL_DOMAINS.includes(parts[1]);
 }
 
 function hashCode(code, salt) {

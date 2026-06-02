@@ -1,6 +1,13 @@
 const cloudApi = require('../../utils/cloudApi');
 const store = require('../../utils/store');
 
+const EMAIL_DOMAINS = ['sjtu.edu.cn', 'alumni.sjtu.edu.cn'];
+
+function isSchoolEmail(email) {
+  const parts = email.split('@');
+  return parts.length === 2 && Boolean(parts[0]) && EMAIL_DOMAINS.includes(parts[1]);
+}
+
 Page({
   data: {
     email: '',
@@ -73,8 +80,8 @@ Page({
     }
 
     const email = this.data.email.trim().toLowerCase();
-    if (!email || email.split('@')[1] !== 'sjtu.edu.cn') {
-      wx.showToast({ title: '请填写 sjtu.edu.cn 邮箱', icon: 'none' });
+    if (!isSchoolEmail(email)) {
+      wx.showToast({ title: '请填写交大学校邮箱', icon: 'none' });
       return;
     }
 
@@ -107,7 +114,7 @@ Page({
 
     const email = this.data.email.trim().toLowerCase();
     const code = this.data.code.trim();
-    if (!email || email.split('@')[1] !== 'sjtu.edu.cn' || !/^\d{6}$/.test(code)) {
+    if (!isSchoolEmail(email) || !/^\d{6}$/.test(code)) {
       wx.showToast({ title: '请填写邮箱和 6 位验证码', icon: 'none' });
       return;
     }

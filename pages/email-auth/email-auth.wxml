@@ -12,7 +12,7 @@
   <view class="form-card auth-form">
     <view class="field">
       <text class="label">学校邮箱</text>
-      <input name="email" value="{{email}}" placeholder="name@sjtu.edu.cn" bindinput="onEmailInput" />
+      <input name="email" value="{{email}}" placeholder="name@sjtu.edu.cn / alumni.sjtu.edu.cn" bindinput="onEmailInput" />
     </view>
     <view class="field code-field">
       <view class="code-input">
